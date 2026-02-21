@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "פארקספיק",
+    "start": "התחל",
+    "stop": "עצור",
+    "done": "סיום",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "next": "הבא",
+    "back": "חזרה",
+    "retry": "נסה שוב",
+    "loading": "טוען..."
+  },
+  "tabs": {
+    "home": "בית",
+    "exercises": "תרגילים",
+    "progress": "התקדמות",
+    "settings": "הגדרות"
+  },
+  "home": {
+    "welcome": "!ברוך שובך",
+    "dailySession": "התחל תרגול יומי",
+    "todayStats": "התרגול של היום",
+    "noSessionYet": "עדיין לא תרגלת היום",
+    "streak": "ימים רצופים",
+    "minutesPracticed": "דקות תרגול"
+  },
+  "exercises": {
+    "title": "תרגילים",
+    "phonation": "צליל מתמשך",
+    "phonationDesc": "החזק צליל תנועה בקול חזק וארוך ככל האפשר",
+    "reading": "קריאה בקול",
+    "readingDesc": "קרא קטעים בקול רם בעוצמת היעד שלך",
+    "articulation": "היגוי",
+    "articulationDesc": "תרגל שוברי לשון והיגוי ברור",
+    "pitch": "שינויי גובה קול",
+    "pitchDesc": "תרגל דיבור אקספרסיבי עם שינויי גובה",
+    "functional": "ביטויים יומיומיים",
+    "functionalDesc": "תרגל משפטים שאתה משתמש בהם בחיי היומיום"
+  },
+  "exercise": {
+    "readAloud": "קרא את זה בקול",
+    "holdSound": "החזק את הצליל כמה שיותר זמן",
+    "speakPhrase": "אמור את המשפט בבירור",
+    "recording": "...מקליט",
+    "tapToStart": "לחץ כדי להתחיל הקלטה",
+    "tapToStop": "לחץ כדי לעצור",
+    "analyzing": "...מנתח את הדיבור שלך",
+    "volume": "עוצמה",
+    "target": "יעד",
+    "duration": "משך",
+    "accuracy": "דיוק",
+    "greatJob": "!כל הכבוד",
+    "keepPracticing": "!המשך לתרגל",
+    "tooQuiet": "נסה לדבר יותר חזק",
+    "goodVolume": "!עוצמה טובה",
+    "addApiKey": "הוסף מפתח OpenAI בהגדרות לניקוד דיבור",
+    "perfectScoreRequired": "אמור את כל המילים נכון כדי להמשיך",
+    "showAnalysis": "הצג ניתוח מפורט",
+    "hideAnalysis": "הסתר ניתוח",
+    "analysisTitle": "ניתוח מילים",
+    "tips": ":טיפים להגייה"
+  },
+  "progress": {
+    "title": "ההתקדמות שלך",
+    "thisWeek": "השבוע",
+    "thisMonth": "החודש",
+    "loudness": "עוצמת קול",
+    "clarity": "בהירות",
+    "sessions": "אימונים",
+    "exercises": "תרגילים",
+    "totalTime": "זמן כולל",
+    "averages": "ממוצעים",
+    "dailyActivity": "פעילות יומית",
+    "recentExercises": "תרגילים אחרונים",
+    "noData": "השלם כמה תרגילים כדי לראות את ההתקדמות שלך"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "language": "שפה",
+    "calibrate": "כיול עוצמה מחדש",
+    "calibrateDesc": "הגדר את עוצמת הדיבור הבסיסית שלך",
+    "textSize": "גודל טקסט",
+    "reminders": "תזכורות יומיות",
+    "about": "אודות פארקספיק",
+    "version": "גרסה"
+  },
+  "onboarding": {
+    "welcome": "ברוכים הבאים לפארקספיק",
+    "welcomeDesc": "תרגילי דיבור יומיים שתוכננו עבור אנשים עם מחלת פרקינסון",
+    "microphone": "גישה למיקרופון",
+    "microphoneDesc": "אנחנו צריכים את המיקרופון שלך כדי להאזין לקולך ולספק משוב בזמן אמת",
+    "calibration": "בוא נכייל",
+    "calibrationDesc": "אמור את המשפט הזה בעוצמה הרגילה שלך כדי שנוכל לקבוע את קו הבסיס האישי שלך",
+    "calibrationPhrase": "היום הוא יום טוב לתרגל דיבור",
+    "speakNow": "...דבר עכשיו",
+    "calibrationDone": "!קו הבסיס נקבע",
+    "getStarted": "בואו נתחיל"
+  }
+}

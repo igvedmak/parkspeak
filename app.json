@@ -1,30 +1,67 @@
 {
   "expo": {
-    "name": "parkspeak-init",
-    "slug": "parkspeak-init",
+    "name": "ParkSpeak",
+    "slug": "parkspeak",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "parkspeak",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FAFAF8"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.parkspeak.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "ParkSpeak needs microphone access to analyze your speech during exercises."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FAFAF8"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.parkspeak.app",
+      "permissions": [
+        "RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./src/app"
+        }
+      ],
+      "expo-localization",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "ParkSpeak needs microphone access to analyze your speech during exercises."
+        }
+      ],
+      "expo-sqlite"
+    ],
+    "extra": {
+      "router": {
+        "root": "./src/app"
+      },
+      "eas": {
+        "projectId": "e4873b34-7595-42a7-9427-369b56a1c250"
+      }
     }
   }
 }

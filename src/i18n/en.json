@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "ParkSpeak",
+    "start": "Start",
+    "stop": "Stop",
+    "done": "Done",
+    "cancel": "Cancel",
+    "save": "Save",
+    "next": "Next",
+    "back": "Back",
+    "retry": "Try Again",
+    "loading": "Loading..."
+  },
+  "tabs": {
+    "home": "Home",
+    "exercises": "Exercises",
+    "progress": "Progress",
+    "settings": "Settings"
+  },
+  "home": {
+    "welcome": "Welcome back!",
+    "dailySession": "Start Daily Session",
+    "todayStats": "Today's Practice",
+    "noSessionYet": "No practice yet today",
+    "streak": "Day Streak",
+    "minutesPracticed": "min practiced"
+  },
+  "exercises": {
+    "title": "Exercises",
+    "phonation": "Sustained Sound",
+    "phonationDesc": "Hold a vowel sound as loud and long as you can",
+    "reading": "Loud Reading",
+    "readingDesc": "Read passages aloud at your target volume",
+    "articulation": "Articulation",
+    "articulationDesc": "Practice tongue twisters and clear pronunciation",
+    "pitch": "Pitch Variation",
+    "pitchDesc": "Practice expressive speech with pitch changes",
+    "functional": "Everyday Phrases",
+    "functionalDesc": "Practice phrases you use in daily life"
+  },
+  "exercise": {
+    "readAloud": "Read this aloud",
+    "holdSound": "Hold this sound as long as you can",
+    "speakPhrase": "Speak this phrase clearly",
+    "recording": "Recording...",
+    "tapToStart": "Tap to start recording",
+    "tapToStop": "Tap to stop",
+    "analyzing": "Analyzing your speech...",
+    "volume": "Volume",
+    "target": "Target",
+    "duration": "Duration",
+    "accuracy": "Accuracy",
+    "greatJob": "Great job!",
+    "keepPracticing": "Keep practicing!",
+    "tooQuiet": "Try speaking louder",
+    "goodVolume": "Good volume!",
+    "addApiKey": "Add your OpenAI API key in Settings for speech scoring",
+    "perfectScoreRequired": "Say all words correctly to continue",
+    "showAnalysis": "Show Detailed Analysis",
+    "hideAnalysis": "Hide Analysis",
+    "analysisTitle": "Word Analysis",
+    "tips": "Pronunciation Tips:"
+  },
+  "progress": {
+    "title": "Your Progress",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "loudness": "Loudness",
+    "clarity": "Clarity",
+    "sessions": "Sessions",
+    "exercises": "Exercises",
+    "totalTime": "Total Time",
+    "averages": "Averages",
+    "dailyActivity": "Daily Activity",
+    "recentExercises": "Recent Exercises",
+    "noData": "Complete some exercises to see your progress"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "calibrate": "Recalibrate Volume",
+    "calibrateDesc": "Set your baseline speaking volume",
+    "textSize": "Text Size",
+    "reminders": "Daily Reminders",
+    "about": "About ParkSpeak",
+    "version": "Version"
+  },
+  "onboarding": {
+    "welcome": "Welcome to ParkSpeak",
+    "welcomeDesc": "Daily speech exercises designed for people with Parkinson's disease",
+    "microphone": "Microphone Access",
+    "microphoneDesc": "We need your microphone to listen to your voice and provide real-time feedback",
+    "calibration": "Let's Calibrate",
+    "calibrationDesc": "Speak this phrase at your normal volume so we can set your personal baseline",
+    "calibrationPhrase": "Today is a good day to practice speaking",
+    "speakNow": "Speak now...",
+    "calibrationDone": "Baseline set!",
+    "getStarted": "Get Started"
+  }
+}
