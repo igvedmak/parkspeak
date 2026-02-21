@@ -7,7 +7,6 @@ import { VolumeMeter } from '../../components/audio/VolumeMeter';
 import { RecordButton } from '../../components/audio/RecordButton';
 import { PromptDisplay } from '../../components/exercise/PromptDisplay';
 import { ResultsCard } from '../../components/exercise/ResultsCard';
-import { PerceptionPrompt } from '../../components/exercise/PerceptionPrompt';
 import { AnalysisCard } from '../../components/exercise/AnalysisCard';
 import { SessionProgress } from '../../components/exercise/SessionProgress';
 import { Typography } from '../../components/ui/Typography';
@@ -17,10 +16,10 @@ import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 import { useSpeechToText } from '../../hooks/useSpeechToText';
 import { useSessionStore } from '../../store/useSessionStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
-import { loudnessRatio } from '../../lib/audio';
+import { loudnessRatio, getVolumeZone } from '../../lib/audio';
 import { calculateIntelligibility, getWordResults, type WordResult } from '../../lib/scoring';
 import { getShuffledExercises, type ExerciseType, type Exercise } from '../../lib/content';
-import { saveAttempt, createSession, endSession, type Perception } from '../../lib/database';
+import { saveAttempt, createSession, endSession } from '../../lib/database';
 import { stopSpeech } from '../../lib/speech';
 import { colors, spacing } from '../../constants/theme';
 import React from 'react';
@@ -45,7 +44,7 @@ const INSTRUCTION_KEYS: Record<ExerciseType, string> = {
   functional: 'exercise.speakPhrase',
 };
 
-type Phase = 'ready' | 'recording' | 'perception' | 'analyzing' | 'results' | 'complete';
+type Phase = 'ready' | 'recording' | 'analyzing' | 'results' | 'complete';
 
 export default function SessionScreen() {
   const { t, i18n } = useTranslation();
@@ -70,10 +69,6 @@ export default function SessionScreen() {
   const [wordResults, setWordResults] = useState<WordResult[]>([]);
   const [resultDuration, setResultDuration] = useState(0);
   const rmsAccumRef = useRef({ sum: 0, count: 0 });
-
-  const pendingUriRef = useRef<string | null>(null);
-  const pendingRatioRef = useRef<number | null>(null);
-  const pendingDurationRef = useRef<number>(0);
 
   // Accumulate session totals
   const totalsRef = useRef({ count: 0, loudnessSum: 0, loudnessCount: 0, intelligibilitySum: 0, intelligibilityCount: 0 });
@@ -106,18 +101,54 @@ export default function SessionScreen() {
 
   const handleToggleRecording = async () => {
     if (phase === 'recording') {
+      if (!currentStep) return;
       const uri = await stopRecording();
       const accum = rmsAccumRef.current;
       const avgRms = accum.count > 0 ? accum.sum / accum.count : 0;
       const ratio = baselineRms ? loudnessRatio(avgRms, baselineRms) : null;
+      const duration = recordingDuration;
       setResultLoudness(ratio);
-      setResultDuration(recordingDuration);
+      setResultDuration(duration);
 
-      pendingUriRef.current = uri;
-      pendingRatioRef.current = ratio;
-      pendingDurationRef.current = recordingDuration;
+      // Auto-detect perception from volume zone
+      const zone = ratio != null ? getVolumeZone(ratio) : 'quiet';
+      const perception = zone === 'good' ? 'right' : zone;
 
-      setPhase('perception');
+      let finalText = '';
+      let finalScore: number | null = null;
+
+      if (currentStep.exercise.target && isSttReady && uri) {
+        setPhase('analyzing');
+        try {
+          finalText = await transcribe(uri, i18n.language);
+          setRecognizedText(finalText);
+          finalScore = calculateIntelligibility(finalText, currentStep.exercise.target);
+          setResultIntelligibility(finalScore);
+          setWordResults(getWordResults(finalText, currentStep.exercise.target));
+        } catch {
+          setResultIntelligibility(null);
+        }
+      }
+
+      // Update totals
+      totalsRef.current.count++;
+      if (ratio != null) { totalsRef.current.loudnessSum += ratio; totalsRef.current.loudnessCount++; }
+      if (finalScore != null) { totalsRef.current.intelligibilitySum += finalScore; totalsRef.current.intelligibilityCount++; }
+
+      saveAttempt({
+        exerciseId: currentStep.exercise.id,
+        exerciseType: currentStep.exerciseType,
+        sessionId: sessionId ?? undefined,
+        durationSeconds: duration,
+        avgLoudness: ratio,
+        intelligibility: finalScore,
+        recognizedText: finalText,
+        targetText: currentStep.exercise.target || '',
+        language: i18n.language,
+        perception,
+      }).catch(console.error);
+
+      setPhase('results');
     } else {
       reset();
       rmsAccumRef.current = { sum: 0, count: 0 };
@@ -126,49 +157,6 @@ export default function SessionScreen() {
       setPhase('recording');
       await startRecording();
     }
-  };
-
-  const handlePerceptionSelect = async (perception: Perception) => {
-    if (!currentStep) return;
-    const uri = pendingUriRef.current;
-    const ratio = pendingRatioRef.current;
-    const duration = pendingDurationRef.current;
-
-    let finalText = '';
-    let finalScore: number | null = null;
-
-    if (currentStep.exercise.target && isSttReady && uri) {
-      setPhase('analyzing');
-      try {
-        finalText = await transcribe(uri, i18n.language);
-        setRecognizedText(finalText);
-        finalScore = calculateIntelligibility(finalText, currentStep.exercise.target);
-        setResultIntelligibility(finalScore);
-        setWordResults(getWordResults(finalText, currentStep.exercise.target));
-      } catch {
-        setResultIntelligibility(null);
-      }
-    }
-
-    // Update totals
-    totalsRef.current.count++;
-    if (ratio != null) { totalsRef.current.loudnessSum += ratio; totalsRef.current.loudnessCount++; }
-    if (finalScore != null) { totalsRef.current.intelligibilitySum += finalScore; totalsRef.current.intelligibilityCount++; }
-
-    saveAttempt({
-      exerciseId: currentStep.exercise.id,
-      exerciseType: currentStep.exerciseType,
-      sessionId: sessionId ?? undefined,
-      durationSeconds: duration,
-      avgLoudness: ratio,
-      intelligibility: finalScore,
-      recognizedText: finalText,
-      targetText: currentStep.exercise.target || '',
-      language: i18n.language,
-      perception,
-    }).catch(console.error);
-
-    setPhase('results');
   };
 
   if (phase === 'recording' && currentRms > 0) {
@@ -263,8 +251,6 @@ export default function SessionScreen() {
             </View>
             <Button title={t('common.done')} onPress={handleDone} variant="primary" />
           </Card>
-        ) : phase === 'perception' ? (
-          <PerceptionPrompt onSelect={handlePerceptionSelect} />
         ) : phase === 'analyzing' ? (
           <Card style={styles.analyzingCard}>
             <ActivityIndicator size="large" color={colors.accent} />

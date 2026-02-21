@@ -7,18 +7,17 @@ import { VolumeMeter } from '../../components/audio/VolumeMeter';
 import { RecordButton } from '../../components/audio/RecordButton';
 import { PromptDisplay } from '../../components/exercise/PromptDisplay';
 import { ResultsCard } from '../../components/exercise/ResultsCard';
-import { PerceptionPrompt } from '../../components/exercise/PerceptionPrompt';
 import { Typography } from '../../components/ui/Typography';
 import { Card } from '../../components/ui/Card';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 import { useSpeechToText } from '../../hooks/useSpeechToText';
 import { useSessionStore } from '../../store/useSessionStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
-import { loudnessRatio } from '../../lib/audio';
+import { loudnessRatio, getVolumeZone } from '../../lib/audio';
 import { calculateIntelligibility, getWordResults, type WordResult } from '../../lib/scoring';
 import { AnalysisCard } from '../../components/exercise/AnalysisCard';
 import { getShuffledExercises, generateExercises, type ExerciseType, type Exercise } from '../../lib/content';
-import { saveAttempt, getRecentAccuracyByType, type Perception } from '../../lib/database';
+import { saveAttempt, getRecentAccuracyByType } from '../../lib/database';
 import { getTargetDifficulty } from '../../lib/difficulty';
 import { stopSpeech } from '../../lib/speech';
 import { colors, spacing } from '../../constants/theme';
@@ -32,7 +31,7 @@ const INSTRUCTION_KEYS: Record<ExerciseType, string> = {
   functional: 'exercise.speakPhrase',
 };
 
-type Phase = 'ready' | 'recording' | 'perception' | 'analyzing' | 'results';
+type Phase = 'ready' | 'recording' | 'analyzing' | 'results';
 
 export default function ExerciseScreen() {
   const { type } = useLocalSearchParams<{ type: string }>();
@@ -103,11 +102,6 @@ export default function ExerciseScreen() {
   const [resultDuration, setResultDuration] = useState(0);
   const rmsAccumRef = useRef({ sum: 0, count: 0 });
 
-  // Refs to hold recording data while waiting for perception
-  const pendingUriRef = useRef<string | null>(null);
-  const pendingRatioRef = useRef<number | null>(null);
-  const pendingDurationRef = useRef<number>(0);
-
   const currentExercise: Exercise | undefined = exercises[exerciseIndex];
   if (!currentExercise) {
     return (
@@ -124,16 +118,46 @@ export default function ExerciseScreen() {
       const accum = rmsAccumRef.current;
       const avgRms = accum.count > 0 ? accum.sum / accum.count : 0;
       const ratio = baselineRms ? loudnessRatio(avgRms, baselineRms) : null;
+      const duration = recordingDuration;
       setResultLoudness(ratio);
-      setResultDuration(recordingDuration);
+      setResultDuration(duration);
 
-      // Store pending data for after perception
-      pendingUriRef.current = uri;
-      pendingRatioRef.current = ratio;
-      pendingDurationRef.current = recordingDuration;
+      // Auto-detect perception from volume zone
+      const zone = ratio != null ? getVolumeZone(ratio) : 'quiet';
+      const perception = zone === 'good' ? 'right' : zone;
 
-      // Show perception prompt
-      setPhase('perception');
+      let finalText = '';
+      let finalScore: number | null = null;
+
+      if (currentExercise.target && isSttReady && uri) {
+        setPhase('analyzing');
+        try {
+          finalText = await transcribe(uri, i18n.language);
+          setRecognizedText(finalText);
+
+          finalScore = calculateIntelligibility(finalText, currentExercise.target);
+          setResultIntelligibility(finalScore);
+
+          setWordResults(getWordResults(finalText, currentExercise.target));
+        } catch (e) {
+          console.error('[DEBUG] STT error:', e);
+          setResultIntelligibility(null);
+        }
+      }
+
+      saveAttempt({
+        exerciseId: currentExercise.id,
+        exerciseType,
+        durationSeconds: duration,
+        avgLoudness: ratio,
+        intelligibility: finalScore,
+        recognizedText: finalText,
+        targetText: currentExercise.target || '',
+        language: i18n.language,
+        perception,
+      }).catch((e) => console.error('[DB] Failed to save attempt:', e));
+
+      setPhase('results');
     } else {
       // === START RECORDING ===
       reset();
@@ -143,45 +167,6 @@ export default function ExerciseScreen() {
       setPhase('recording');
       await startRecording();
     }
-  };
-
-  const handlePerceptionSelect = async (perception: Perception) => {
-    const uri = pendingUriRef.current;
-    const ratio = pendingRatioRef.current;
-    const duration = pendingDurationRef.current;
-
-    let finalText = '';
-    let finalScore: number | null = null;
-
-    if (currentExercise.target && isSttReady && uri) {
-      setPhase('analyzing');
-      try {
-        finalText = await transcribe(uri, i18n.language);
-        setRecognizedText(finalText);
-
-        finalScore = calculateIntelligibility(finalText, currentExercise.target);
-        setResultIntelligibility(finalScore);
-
-        setWordResults(getWordResults(finalText, currentExercise.target));
-      } catch (e) {
-        console.error('[DEBUG] STT error:', e);
-        setResultIntelligibility(null);
-      }
-    }
-
-    saveAttempt({
-      exerciseId: currentExercise.id,
-      exerciseType,
-      durationSeconds: duration,
-      avgLoudness: ratio,
-      intelligibility: finalScore,
-      recognizedText: finalText,
-      targetText: currentExercise.target || '',
-      language: i18n.language,
-      perception,
-    }).catch((e) => console.error('[DB] Failed to save attempt:', e));
-
-    setPhase('results');
   };
 
   // Accumulate RMS for average calculation
@@ -252,9 +237,7 @@ export default function ExerciseScreen() {
           {isGenerating ? '  ...' : ''}
         </Typography>
 
-        {phase === 'perception' ? (
-          <PerceptionPrompt onSelect={handlePerceptionSelect} />
-        ) : phase === 'analyzing' ? (
+        {phase === 'analyzing' ? (
           <Card style={styles.analyzingCard}>
             <ActivityIndicator size="large" color={colors.accent} />
             <Typography variant="body" align="center">
