@@ -37,15 +37,42 @@ export function getRandomExercise(language: string, type: ExerciseType): Exercis
 export function getShuffledExercises(
   language: string,
   type: ExerciseType,
-  count: number = 5
+  count: number = 5,
+  targetDifficulty?: number
 ): Exercise[] {
   const all = getExercises(language, type);
-  const shuffled = [...all];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+
+  if (targetDifficulty != null) {
+    // Weight: 60% target, 30% adjacent (±1), 10% any
+    const target = all.filter((e) => e.difficulty === targetDifficulty);
+    const adjacent = all.filter((e) => Math.abs(e.difficulty - targetDifficulty) === 1);
+    const pool: Exercise[] = [];
+    const targetCount = Math.ceil(count * 0.6);
+    const adjacentCount = Math.ceil(count * 0.3);
+    const anyCount = count - targetCount - adjacentCount;
+
+    pool.push(...shuffle(target).slice(0, targetCount));
+    pool.push(...shuffle(adjacent).slice(0, adjacentCount));
+    pool.push(...shuffle(all).slice(0, anyCount));
+
+    // Fill remaining if not enough in target/adjacent
+    while (pool.length < count && all.length > 0) {
+      const random = all[Math.floor(Math.random() * all.length)];
+      if (!pool.includes(random)) pool.push(random);
+    }
+    return shuffle(pool).slice(0, count);
   }
-  return shuffled.slice(0, count);
+
+  return shuffle(all).slice(0, count);
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
 }
 
 function langName(lang: string): string {

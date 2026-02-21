@@ -1,0 +1,28 @@
+{
+  "breath": [
+    { "id": "br-en-01", "prompt": "Sustained Exhale", "instruction": "Take a deep breath, then blow out as slowly and steadily as you can", "durationSeconds": null, "metric": "duration", "difficulty": 1 },
+    { "id": "br-en-02", "prompt": "Count on One Breath", "instruction": "Take a deep breath, then count 1, 2, 3... as high as you can on one breath", "durationSeconds": null, "metric": "count", "difficulty": 1 },
+    { "id": "br-en-03", "prompt": "Sustained S", "instruction": "Take a deep breath, then say 'sssss' for as long as you can", "durationSeconds": null, "metric": "duration", "category": "sz-s", "difficulty": 2 },
+    { "id": "br-en-04", "prompt": "Sustained Z", "instruction": "Take a deep breath, then say 'zzzzz' for as long as you can", "durationSeconds": null, "metric": "duration", "category": "sz-z", "difficulty": 2 },
+    { "id": "br-en-05", "prompt": "Deep Belly Breath", "instruction": "Breathe deeply into your belly. Feel it expand. Hold for 3 seconds, then exhale slowly.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "br-en-06", "prompt": "Panting Exercise", "instruction": "Take quick, short breaths — like a panting dog. Focus on using your diaphragm.", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "facial": [
+    { "id": "fc-en-01", "prompt": "Wide Smile", "instruction": "Smile as wide as you can and hold for the full time", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-en-02", "prompt": "Lip Pucker", "instruction": "Pucker your lips tightly, like you're kissing, and hold", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-en-03", "prompt": "Tongue Side-to-Side", "instruction": "Move your tongue from one corner of your mouth to the other, slowly", "durationSeconds": 15, "difficulty": 1 },
+    { "id": "fc-en-04", "prompt": "Jaw Stretch", "instruction": "Open your mouth as wide as comfortable and hold", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-en-05", "prompt": "Cheek Puffs", "instruction": "Puff out both cheeks, hold 3 seconds, then release. Repeat.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "fc-en-06", "prompt": "Tongue Push-ups", "instruction": "Press your tongue firmly against the roof of your mouth, hold 3 seconds, release. Repeat.", "durationSeconds": 15, "difficulty": 2 },
+    { "id": "fc-en-07", "prompt": "Lip Stretch", "instruction": "Alternate between a wide smile and a tight pucker. Slowly.", "durationSeconds": 20, "difficulty": 2 },
+    { "id": "fc-en-08", "prompt": "Tongue Circle", "instruction": "Slowly move your tongue in a circle around the inside of your lips", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "warmup": [
+    { "id": "wu-en-01", "prompt": "Humming", "instruction": "Hum steadily at a comfortable pitch: Hmmmmmm", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-en-02", "prompt": "Lip Trills", "instruction": "Blow air through your lips to make them vibrate (like a horse sound)", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-en-03", "prompt": "Mah-Mah-Mah", "instruction": "Say 'Mah mah mah mah mah' repeatedly, opening wide each time", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-en-04", "prompt": "Sustained Ah", "instruction": "Say 'Ahhhhhh' as long and loud as you can", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-en-05", "prompt": "Sustained Ee", "instruction": "Say 'Eeeeee' as long and loud as you can", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-en-06", "prompt": "Sustained Oo", "instruction": "Say 'Oooooo' as long and loud as you can", "durationSeconds": 10, "difficulty": 1 }
+  ]
+}

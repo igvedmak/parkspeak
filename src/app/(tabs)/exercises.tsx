@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,12 @@ const EXERCISE_TYPES = [
   { type: 'functional', icon: '💬', titleKey: 'exercises.functional', descKey: 'exercises.functionalDesc' },
 ] as const;
 
+const TIMED_EXERCISE_TYPES = [
+  { type: 'warmup', icon: '🎤', titleKey: 'exercises.warmup', descKey: 'exercises.warmupDesc' },
+  { type: 'breath', icon: '💨', titleKey: 'exercises.breath', descKey: 'exercises.breathDesc' },
+  { type: 'facial', icon: '😊', titleKey: 'exercises.facial', descKey: 'exercises.facialDesc' },
+] as const;
+
 export default function ExercisesScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -24,6 +30,17 @@ export default function ExercisesScreen() {
       style={styles.container}
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + spacing.xl }]}
     >
+      {/* Guided session */}
+      <ExerciseCard
+        title={t('session.startGuided')}
+        description={t('session.startGuidedDesc')}
+        icon="🎯"
+        onPress={() => router.push('/exercise/session')}
+      />
+
+      <View style={styles.divider} />
+
+      {/* Voice exercises */}
       {EXERCISE_TYPES.map((ex) => (
         <ExerciseCard
           key={ex.type}
@@ -31,6 +48,19 @@ export default function ExercisesScreen() {
           description={t(ex.descKey)}
           icon={ex.icon}
           onPress={() => router.push(`/exercise/${ex.type}`)}
+        />
+      ))}
+
+      <View style={styles.divider} />
+
+      {/* Timer-based exercises */}
+      {TIMED_EXERCISE_TYPES.map((ex) => (
+        <ExerciseCard
+          key={ex.type}
+          title={t(ex.titleKey)}
+          description={t(ex.descKey)}
+          icon={ex.icon}
+          onPress={() => router.push(`/exercise/timed/${ex.type}`)}
         />
       ))}
     </ScrollView>
@@ -45,5 +75,10 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     gap: spacing.md,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.xs,
   },
 });

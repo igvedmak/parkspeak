@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '../../components/ui/Typography';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { CarryoverCard } from '../../components/home/CarryoverCard';
 import { getTodayStats, getCurrentStreak, type DailyStat } from '../../lib/database';
 import { colors, spacing } from '../../constants/theme';
 import { thresholds } from '../../constants/thresholds';
@@ -81,7 +82,7 @@ export default function HomeScreen() {
 
       <Button
         title={t('home.dailySession')}
-        onPress={() => router.push('/exercises')}
+        onPress={() => router.push('/exercise/session')}
         style={styles.startButton}
       />
 
@@ -105,6 +106,8 @@ export default function HomeScreen() {
           </View>
         </View>
       </Card>
+
+      <CarryoverCard />
     </ScrollView>
   );
 }

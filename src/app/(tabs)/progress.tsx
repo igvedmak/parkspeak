@@ -5,11 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from 'expo-router';
 import { Typography } from '../../components/ui/Typography';
 import { Card } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { generateReport, formatReportAsText, shareReport } from '../../lib/report';
 import {
   getWeeklyStats,
   getMonthlyStats,
   getCurrentStreak,
   getRecentAttempts,
+  getPerceptionStats,
   type DailyStat,
 } from '../../lib/database';
 import { colors, spacing, borderRadius } from '../../constants/theme';
@@ -35,16 +38,19 @@ export default function ProgressScreen() {
       intelligibility: number | null;
     }>
   >([]);
+  const [perceptionStats, setPerceptionStats] = useState<{ total: number; correct: number }>({ total: 0, correct: 0 });
 
   const loadData = useCallback(async () => {
-    const [weeklyOrMonthly, currentStreak, recent] = await Promise.all([
+    const [weeklyOrMonthly, currentStreak, recent, perception] = await Promise.all([
       period === 'week' ? getWeeklyStats() : getMonthlyStats(),
       getCurrentStreak(),
       getRecentAttempts(10),
+      getPerceptionStats(period === 'week' ? 7 : 30),
     ]);
     setStats(weeklyOrMonthly);
     setStreak(currentStreak);
     setRecentAttempts(recent);
+    setPerceptionStats(perception);
   }, [period]);
 
   useFocusEffect(
@@ -144,6 +150,30 @@ export default function ProgressScreen() {
             </View>
           </Card>
 
+          {/* Self-awareness / perception accuracy */}
+          {perceptionStats.total > 0 && (
+            <Card style={styles.averagesCard}>
+              <Typography variant="body" style={styles.sectionLabel}>
+                {t('progress.perceptionAccuracy')}
+              </Typography>
+              <View style={styles.avgItem}>
+                <Typography
+                  variant="title"
+                  color={
+                    perceptionStats.correct / perceptionStats.total >= 0.6
+                      ? colors.success
+                      : colors.warning
+                  }
+                >
+                  {Math.round((perceptionStats.correct / perceptionStats.total) * 100)}%
+                </Typography>
+                <Typography variant="caption" color={colors.textSecondary}>
+                  {t('progress.perceptionDesc')}
+                </Typography>
+              </View>
+            </Card>
+          )}
+
           {/* Bar chart of daily activity */}
           <Card>
             <Typography variant="body" style={styles.sectionLabel}>
@@ -221,6 +251,18 @@ export default function ProgressScreen() {
               ))}
             </Card>
           )}
+
+          {/* Share report with SLP */}
+          <Button
+            title={t('progress.exportReport')}
+            onPress={async () => {
+              const days = period === 'week' ? 7 : 30;
+              const data = await generateReport(days);
+              const text = formatReportAsText(data, t);
+              await shareReport(text);
+            }}
+            variant="outline"
+          />
         </>
       )}
     </ScrollView>

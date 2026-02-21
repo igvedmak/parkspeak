@@ -36,7 +36,13 @@
     "pitch": "שינויי גובה קול",
     "pitchDesc": "תרגל דיבור אקספרסיבי עם שינויי גובה",
     "functional": "ביטויים יומיומיים",
-    "functionalDesc": "תרגל משפטים שאתה משתמש בהם בחיי היומיום"
+    "functionalDesc": "תרגל משפטים שאתה משתמש בהם בחיי היומיום",
+    "breath": "תמיכה בנשימה",
+    "breathDesc": "בנה שליטה בנשימה עם תרגילי נשיפה",
+    "facial": "פנים ופה",
+    "facialDesc": "חזק שרירי פנים עם תרגילים מודרכים",
+    "warmup": "חימום קולי",
+    "warmupDesc": "שגרת חימום קצרה של 2 דקות לפני תרגול"
   },
   "exercise": {
     "readAloud": "קרא את זה בקול",
@@ -61,7 +67,67 @@
     "hideAnalysis": "הסתר ניתוח",
     "analysisTitle": "ניתוח מילים",
     "tips": ":טיפים להגייה",
-    "weHeard": ":שמענו"
+    "weHeard": ":שמענו",
+    "howLoud": "?איך זה הרגיש מבחינת עוצמה",
+    "perceptionQuiet": "חלש מדי",
+    "perceptionRight": "בדיוק נכון",
+    "perceptionLoud": "חזק מדי"
+  },
+  "emotions": {
+    "happy": "אמור בשמחה",
+    "angry": "אמור בכעס",
+    "surprised": "אמור בהפתעה",
+    "questioning": "אמור כשאלה",
+    "excited": "אמור בהתרגשות",
+    "concerned": "אמור בדאגה",
+    "sad": "אמור בעצב",
+    "urgent": "אמור בדחיפות",
+    "frustrated": "אמור בתסכול"
+  },
+  "session": {
+    "title": "תרגול יומי",
+    "step": "שלב {{current}} מתוך {{total}}",
+    "complete": "!התרגול הושלם",
+    "summary": "סיכום התרגול",
+    "greatWork": "!עבודה מצוינת היום",
+    "exercisesCompleted": "תרגילים שהושלמו",
+    "avgLoudness": "עוצמה ממוצעת",
+    "avgClarity": "בהירות ממוצעת",
+    "startGuided": "תרגול מודרך",
+    "startGuidedDesc": "תרגול מובנה בסגנון LSVT LOUD"
+  },
+  "timedExercise": {
+    "ready": "?מוכן",
+    "go": "!התחל",
+    "timeRemaining": "זמן שנותר",
+    "stopwatch": "לחץ עצור כשתסיים",
+    "duration": "משך",
+    "count": "ספירה שהושגה",
+    "szRatio": "S/Z יחס",
+    "szNormal": "טווח תקין: 0.9 – 1.4",
+    "warmupComplete": ".החימום הושלם! אתה מוכן לתרגול",
+    "breathResult": "התוצאה שלך"
+  },
+  "carryover": {
+    "title": "האתגר של היום",
+    "completed": "!הושלם",
+    "markDone": "סמן כבוצע",
+    "partnerRating": "(דירוג בן זוג (אופציונלי",
+    "orderCoffee": "הזמן קפה בעוצמת היעד שלך",
+    "callFamily": "התקשר לבן משפחה ודבר בקול רם",
+    "greetNeighbor": "!ברך את השכן שלך בשלום רם",
+    "askQuestion": "שאל שאלה בחנות או במקום ציבורי",
+    "readAloud": "קרא פסקה בקול רם למישהו בבית",
+    "orderRestaurant": "הזמן ארוחה במסעדה",
+    "phoneFriend": "התקשר לחבר ושוחח 5 דקות",
+    "talkDoctor": "דבר בבירור בביקור הרופא הבא",
+    "greetCashier": "אמור תודה בקול רם לקופאי",
+    "singAlong": "שיר יחד עם שיר אהוב בקול רם",
+    "readNews": "קרא כותרת חדשות בקול רם למישהו",
+    "askDirections": "שאל מישהו לכיוונים",
+    "introduceYourself": "הציג את עצמך למישהו חדש",
+    "tellStory": "ספר סיפור קצר לבן משפחה",
+    "phoneOrder": "בצע הזמנה טלפונית של אוכל או ציוד"
   },
   "progress": {
     "title": "ההתקדמות שלך",
@@ -75,7 +141,26 @@
     "averages": "ממוצעים",
     "dailyActivity": "פעילות יומית",
     "recentExercises": "תרגילים אחרונים",
-    "noData": "השלם כמה תרגילים כדי לראות את ההתקדמות שלך"
+    "noData": "השלם כמה תרגילים כדי לראות את ההתקדמות שלך",
+    "perceptionAccuracy": "מודעות עצמית",
+    "perceptionDesc": "כמה פעמים התפיסה שלך תאמה למציאות",
+    "exportReport": "שתף דוח עם קלינאי תקשורת"
+  },
+  "report": {
+    "title": "דוח התקדמות בטיפול בדיבור",
+    "period": "תקופה",
+    "summary": "סיכום",
+    "voiceMetrics": "מדדי קול",
+    "exerciseBreakdown": "פירוט תרגילים",
+    "improving": "משתפר",
+    "stable": "יציב",
+    "declining": "יורד",
+    "insufficient": "אין מספיק נתונים"
+  },
+  "reminders": {
+    "streak": "!תרגלת {{days}} ימים ברציפות! המשך כך",
+    "improvement": "!העוצמה שלך השתפרה ב-{{pct}}% השבוע",
+    "default": "!הגיע הזמן לתרגול הדיבור היומי שלך"
   },
   "settings": {
     "title": "הגדרות",
@@ -84,6 +169,8 @@
     "calibrateDesc": "הגדר את עוצמת הדיבור הבסיסית שלך",
     "textSize": "גודל טקסט",
     "reminders": "תזכורות יומיות",
+    "reminderTime": "שעת תזכורת",
+    "notificationsPermission": "אפשר התראות כדי לקבל תזכורות יומיות",
     "apiKey": "מפתח OpenAI API",
     "apiKeyDesc": "נדרש לניקוד דיבור אוטומטי",
     "apiKeySaved": "מפתח API נשמר",

@@ -36,7 +36,13 @@
     "pitch": "Pitch Variation",
     "pitchDesc": "Practice expressive speech with pitch changes",
     "functional": "Everyday Phrases",
-    "functionalDesc": "Practice phrases you use in daily life"
+    "functionalDesc": "Practice phrases you use in daily life",
+    "breath": "Breath Support",
+    "breathDesc": "Build breath control with sustained exhale exercises",
+    "facial": "Face & Mouth",
+    "facialDesc": "Strengthen facial muscles with guided exercises",
+    "warmup": "Voice Warmup",
+    "warmupDesc": "Quick 2-minute warmup routine before practice"
   },
   "exercise": {
     "readAloud": "Read this aloud",
@@ -61,7 +67,67 @@
     "hideAnalysis": "Hide Analysis",
     "analysisTitle": "Word Analysis",
     "tips": "Pronunciation Tips:",
-    "weHeard": "We heard:"
+    "weHeard": "We heard:",
+    "howLoud": "How loud did that feel?",
+    "perceptionQuiet": "Too Quiet",
+    "perceptionRight": "Just Right",
+    "perceptionLoud": "Too Loud"
+  },
+  "emotions": {
+    "happy": "Say it HAPPILY",
+    "angry": "Say it ANGRILY",
+    "surprised": "Say it with SURPRISE",
+    "questioning": "Say it as a QUESTION",
+    "excited": "Say it with EXCITEMENT",
+    "concerned": "Say it with CONCERN",
+    "sad": "Say it SADLY",
+    "urgent": "Say it URGENTLY",
+    "frustrated": "Say it with FRUSTRATION"
+  },
+  "session": {
+    "title": "Daily Session",
+    "step": "Step {{current}} of {{total}}",
+    "complete": "Session Complete!",
+    "summary": "Session Summary",
+    "greatWork": "Great work today!",
+    "exercisesCompleted": "Exercises completed",
+    "avgLoudness": "Average loudness",
+    "avgClarity": "Average clarity",
+    "startGuided": "Guided Session",
+    "startGuidedDesc": "LSVT LOUD-style structured practice"
+  },
+  "timedExercise": {
+    "ready": "Ready?",
+    "go": "Go!",
+    "timeRemaining": "Time remaining",
+    "stopwatch": "Tap stop when done",
+    "duration": "Duration",
+    "count": "Count reached",
+    "szRatio": "S/Z Ratio",
+    "szNormal": "Normal range: 0.9 – 1.4",
+    "warmupComplete": "Warmup complete! You're ready to practice.",
+    "breathResult": "Your result"
+  },
+  "carryover": {
+    "title": "Today's Challenge",
+    "completed": "Completed!",
+    "markDone": "Mark as done",
+    "partnerRating": "Partner rating (optional)",
+    "orderCoffee": "Order coffee at your target volume",
+    "callFamily": "Call a family member and speak loudly",
+    "greetNeighbor": "Greet your neighbor with a loud 'Hello!'",
+    "askQuestion": "Ask a question at a store or public place",
+    "readAloud": "Read a paragraph aloud to someone at home",
+    "orderRestaurant": "Order your meal at a restaurant",
+    "phoneFriend": "Call a friend and have a 5-minute conversation",
+    "talkDoctor": "Speak clearly at your next doctor visit",
+    "greetCashier": "Say 'thank you' loudly to a cashier",
+    "singAlong": "Sing along to a favorite song out loud",
+    "readNews": "Read a news headline aloud to someone",
+    "askDirections": "Ask someone for directions",
+    "introduceYourself": "Introduce yourself to someone new",
+    "tellStory": "Tell a short story to a family member",
+    "phoneOrder": "Place a phone order for food or supplies"
   },
   "progress": {
     "title": "Your Progress",
@@ -75,7 +141,26 @@
     "averages": "Averages",
     "dailyActivity": "Daily Activity",
     "recentExercises": "Recent Exercises",
-    "noData": "Complete some exercises to see your progress"
+    "noData": "Complete some exercises to see your progress",
+    "perceptionAccuracy": "Self-Awareness",
+    "perceptionDesc": "How often your perception matches reality",
+    "exportReport": "Share Report with SLP"
+  },
+  "report": {
+    "title": "Speech Therapy Progress Report",
+    "period": "Period",
+    "summary": "Summary",
+    "voiceMetrics": "Voice Metrics",
+    "exerciseBreakdown": "Exercise Breakdown",
+    "improving": "improving",
+    "stable": "stable",
+    "declining": "declining",
+    "insufficient": "not enough data"
+  },
+  "reminders": {
+    "streak": "You've practiced {{days}} days in a row! Keep going!",
+    "improvement": "Your volume improved {{pct}}% this week!",
+    "default": "Time for your daily speech practice!"
   },
   "settings": {
     "title": "Settings",
@@ -84,6 +169,8 @@
     "calibrateDesc": "Set your baseline speaking volume",
     "textSize": "Text Size",
     "reminders": "Daily Reminders",
+    "reminderTime": "Reminder Time",
+    "notificationsPermission": "Enable notifications to receive daily reminders",
     "apiKey": "OpenAI API Key",
     "apiKeyDesc": "Required for speech-to-text scoring",
     "apiKeySaved": "API key saved",

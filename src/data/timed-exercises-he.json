@@ -1,0 +1,28 @@
+{
+  "breath": [
+    { "id": "br-he-01", "prompt": "נשיפה מתמשכת", "instruction": "קח נשימה עמוקה, ואז נשוף לאט וביציבות", "durationSeconds": null, "metric": "duration", "difficulty": 1 },
+    { "id": "br-he-02", "prompt": "ספירה בנשימה אחת", "instruction": "קח נשימה עמוקה, ואז ספור 1, 2, 3... כמה שאתה יכול בנשימה אחת", "durationSeconds": null, "metric": "count", "difficulty": 1 },
+    { "id": "br-he-03", "prompt": "ס' מתמשכת", "instruction": "קח נשימה עמוקה, ואז אמור 'סססס' כמה שיותר זמן", "durationSeconds": null, "metric": "duration", "category": "sz-s", "difficulty": 2 },
+    { "id": "br-he-04", "prompt": "ז' מתמשכת", "instruction": "קח נשימה עמוקה, ואז אמור 'זזזזז' כמה שיותר זמן", "durationSeconds": null, "metric": "duration", "category": "sz-z", "difficulty": 2 },
+    { "id": "br-he-05", "prompt": "נשימת בטן עמוקה", "instruction": "נשום עמוק לתוך הבטן. הרגש אותה מתרחבת. החזק 3 שניות, ואז נשוף לאט.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "br-he-06", "prompt": "תרגיל נשימות קצרות", "instruction": "קח נשימות קצרות ומהירות. התמקד בשימוש בסרעפת.", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "facial": [
+    { "id": "fc-he-01", "prompt": "חיוך רחב", "instruction": "חייך כמה שיותר רחב והחזק", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-he-02", "prompt": "כיווץ שפתיים", "instruction": "כווץ את השפתיים חזק, כמו נשיקה, והחזק", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-he-03", "prompt": "לשון מצד לצד", "instruction": "הזז את הלשון מפינה אחת של הפה לשנייה, לאט", "durationSeconds": 15, "difficulty": 1 },
+    { "id": "fc-he-04", "prompt": "מתיחת לסת", "instruction": "פתח את הפה רחב ככל האפשר בנוחות והחזק", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-he-05", "prompt": "ניפוח לחיים", "instruction": "נפח את שתי הלחיים, החזק 3 שניות, ושחרר. חזור.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "fc-he-06", "prompt": "לחיצות לשון", "instruction": "לחץ את הלשון בחוזקה כנגד תקרת הפה, החזק 3 שניות, שחרר. חזור.", "durationSeconds": 15, "difficulty": 2 },
+    { "id": "fc-he-07", "prompt": "מתיחת שפתיים", "instruction": "החלף בין חיוך רחב לכיווץ שפתיים. לאט.", "durationSeconds": 20, "difficulty": 2 },
+    { "id": "fc-he-08", "prompt": "סיבוב לשון", "instruction": "הזז את הלשון בעיגול לאט סביב פנים השפתיים", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "warmup": [
+    { "id": "wu-he-01", "prompt": "זמזום", "instruction": "זמזם בנוחות בגובה נוח: המממממ", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-he-02", "prompt": "רעידות שפתיים", "instruction": "נשוף אוויר דרך השפתיים כדי לגרום להן לרטוט", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-he-03", "prompt": "מה-מה-מה", "instruction": "אמור 'מה מה מה מה מה' שוב ושוב, פתח רחב בכל פעם", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-he-04", "prompt": "אה מתמשך", "instruction": "אמור 'אההההה' כמה שיותר חזק וארוך", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-he-05", "prompt": "אי מתמשך", "instruction": "אמור 'איייי' כמה שיותר חזק וארוך", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-he-06", "prompt": "או מתמשך", "instruction": "אמור 'אוווו' כמה שיותר חזק וארוך", "durationSeconds": 10, "difficulty": 1 }
+  ]
+}

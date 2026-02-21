@@ -7,6 +7,9 @@ import { StyleSheet } from 'react-native';
 import { colors } from '../constants/theme';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { setLanguage } from '../i18n';
+import { scheduleDailyReminder } from '../lib/notifications';
+import { getSmartReminderMessage } from '../lib/reminderMessages';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 function useOnboardingGuard() {
@@ -37,10 +40,22 @@ function useOnboardingGuard() {
 export default function RootLayout() {
   useOnboardingGuard();
 
+  const { t } = useTranslation();
   const language = useSettingsStore((s) => s.language);
+  const remindersEnabled = useSettingsStore((s) => s.remindersEnabled);
+  const reminderTime = useSettingsStore((s) => s.reminderTime);
+
   useEffect(() => {
     setLanguage(language);
   }, [language]);
+
+  // Refresh notification with latest smart message on launch
+  useEffect(() => {
+    if (!remindersEnabled) return;
+    getSmartReminderMessage(t).then((message) => {
+      scheduleDailyReminder(reminderTime, message);
+    });
+  }, [remindersEnabled, reminderTime]);
 
   return (
     <GestureHandlerRootView style={styles.root}>

@@ -7,6 +7,7 @@ import { VolumeMeter } from '../../components/audio/VolumeMeter';
 import { RecordButton } from '../../components/audio/RecordButton';
 import { PromptDisplay } from '../../components/exercise/PromptDisplay';
 import { ResultsCard } from '../../components/exercise/ResultsCard';
+import { PerceptionPrompt } from '../../components/exercise/PerceptionPrompt';
 import { Typography } from '../../components/ui/Typography';
 import { Card } from '../../components/ui/Card';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
@@ -17,7 +18,8 @@ import { loudnessRatio } from '../../lib/audio';
 import { calculateIntelligibility, getWordResults, type WordResult } from '../../lib/scoring';
 import { AnalysisCard } from '../../components/exercise/AnalysisCard';
 import { getShuffledExercises, generateExercises, type ExerciseType, type Exercise } from '../../lib/content';
-import { saveAttempt } from '../../lib/database';
+import { saveAttempt, getRecentAccuracyByType, type Perception } from '../../lib/database';
+import { getTargetDifficulty } from '../../lib/difficulty';
 import { colors, spacing } from '../../constants/theme';
 import React from 'react';
 
@@ -29,7 +31,7 @@ const INSTRUCTION_KEYS: Record<ExerciseType, string> = {
   functional: 'exercise.speakPhrase',
 };
 
-type Phase = 'ready' | 'recording' | 'analyzing' | 'results';
+type Phase = 'ready' | 'recording' | 'perception' | 'analyzing' | 'results';
 
 export default function ExerciseScreen() {
   const { type } = useLocalSearchParams<{ type: string }>();
@@ -54,25 +56,29 @@ export default function ExerciseScreen() {
   const hasTargetText = exerciseType !== 'phonation';
 
   const canGenerate = !!openaiApiKey && exerciseType !== 'phonation';
-  const [exercises, setExercises] = useState<Exercise[]>(() =>
-    canGenerate ? [] : getShuffledExercises(i18n.language, exerciseType, 5)
-  );
-  const [isGenerating, setIsGenerating] = useState(canGenerate);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [isGenerating, setIsGenerating] = useState(true);
 
+  // Load exercises with adaptive difficulty
   useEffect(() => {
-    if (!canGenerate) return;
     let cancelled = false;
-    generateExercises(i18n.language, exerciseType, openaiApiKey, 5)
-      .then((generated) => {
-        if (!cancelled) setExercises(generated);
-      })
-      .catch((e) => {
-        console.log('[GEN] Falling back to static exercises:', e.message);
-        if (!cancelled) setExercises(getShuffledExercises(i18n.language, exerciseType, 5));
-      })
-      .finally(() => {
-        if (!cancelled) setIsGenerating(false);
-      });
+    (async () => {
+      const avgAccuracy = await getRecentAccuracyByType(exerciseType).catch(() => null);
+      const difficulty = getTargetDifficulty(avgAccuracy);
+
+      if (canGenerate) {
+        try {
+          const generated = await generateExercises(i18n.language, exerciseType, openaiApiKey, 5);
+          if (!cancelled) setExercises(generated);
+        } catch (e) {
+          console.log('[GEN] Falling back to static exercises:', (e as Error).message);
+          if (!cancelled) setExercises(getShuffledExercises(i18n.language, exerciseType, 5, difficulty));
+        }
+      } else {
+        if (!cancelled) setExercises(getShuffledExercises(i18n.language, exerciseType, 5, difficulty));
+      }
+      if (!cancelled) setIsGenerating(false);
+    })();
     return () => { cancelled = true; };
   }, []);
 
@@ -95,6 +101,11 @@ export default function ExerciseScreen() {
   const [resultDuration, setResultDuration] = useState(0);
   const rmsAccumRef = useRef({ sum: 0, count: 0 });
 
+  // Refs to hold recording data while waiting for perception
+  const pendingUriRef = useRef<string | null>(null);
+  const pendingRatioRef = useRef<number | null>(null);
+  const pendingDurationRef = useRef<number>(0);
+
   const currentExercise: Exercise | undefined = exercises[exerciseIndex];
   if (!currentExercise) {
     return (
@@ -114,39 +125,13 @@ export default function ExerciseScreen() {
       setResultLoudness(ratio);
       setResultDuration(recordingDuration);
 
-      let finalText = '';
-      let finalScore: number | null = null;
+      // Store pending data for after perception
+      pendingUriRef.current = uri;
+      pendingRatioRef.current = ratio;
+      pendingDurationRef.current = recordingDuration;
 
-      // Run cloud STT if exercise has target text and API key is set
-      if (currentExercise.target && isSttReady && uri) {
-        setPhase('analyzing');
-        try {
-          finalText = await transcribe(uri, i18n.language);
-          setRecognizedText(finalText);
-
-          finalScore = calculateIntelligibility(finalText, currentExercise.target);
-          setResultIntelligibility(finalScore);
-
-          setWordResults(getWordResults(finalText, currentExercise.target));
-        } catch (e) {
-          console.error('[DEBUG] STT error:', e);
-          setResultIntelligibility(null);
-        }
-      }
-
-      // Save attempt to database
-      saveAttempt({
-        exerciseId: currentExercise.id,
-        exerciseType,
-        durationSeconds: recordingDuration,
-        avgLoudness: ratio,
-        intelligibility: finalScore,
-        recognizedText: finalText,
-        targetText: currentExercise.target || '',
-        language: i18n.language,
-      }).catch((e) => console.error('[DB] Failed to save attempt:', e));
-
-      setPhase('results');
+      // Show perception prompt
+      setPhase('perception');
     } else {
       // === START RECORDING ===
       reset();
@@ -156,6 +141,45 @@ export default function ExerciseScreen() {
       setPhase('recording');
       await startRecording();
     }
+  };
+
+  const handlePerceptionSelect = async (perception: Perception) => {
+    const uri = pendingUriRef.current;
+    const ratio = pendingRatioRef.current;
+    const duration = pendingDurationRef.current;
+
+    let finalText = '';
+    let finalScore: number | null = null;
+
+    if (currentExercise.target && isSttReady && uri) {
+      setPhase('analyzing');
+      try {
+        finalText = await transcribe(uri, i18n.language);
+        setRecognizedText(finalText);
+
+        finalScore = calculateIntelligibility(finalText, currentExercise.target);
+        setResultIntelligibility(finalScore);
+
+        setWordResults(getWordResults(finalText, currentExercise.target));
+      } catch (e) {
+        console.error('[DEBUG] STT error:', e);
+        setResultIntelligibility(null);
+      }
+    }
+
+    saveAttempt({
+      exerciseId: currentExercise.id,
+      exerciseType,
+      durationSeconds: duration,
+      avgLoudness: ratio,
+      intelligibility: finalScore,
+      recognizedText: finalText,
+      targetText: currentExercise.target || '',
+      language: i18n.language,
+      perception,
+    }).catch((e) => console.error('[DB] Failed to save attempt:', e));
+
+    setPhase('results');
   };
 
   // Accumulate RMS for average calculation
@@ -226,7 +250,9 @@ export default function ExerciseScreen() {
           {isGenerating ? '  ...' : ''}
         </Typography>
 
-        {phase === 'analyzing' ? (
+        {phase === 'perception' ? (
+          <PerceptionPrompt onSelect={handlePerceptionSelect} />
+        ) : phase === 'analyzing' ? (
           <Card style={styles.analyzingCard}>
             <ActivityIndicator size="large" color={colors.accent} />
             <Typography variant="body" align="center">
@@ -259,6 +285,7 @@ export default function ExerciseScreen() {
               instruction={t(INSTRUCTION_KEYS[exerciseType])}
               promptText={currentExercise.prompt}
               highlightWord={currentExercise.highlight}
+              emotion={currentExercise.emotion}
             />
 
             <VolumeMeter />
@@ -299,17 +326,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     paddingVertical: spacing.xxl,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: colors.border,
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginTop: spacing.sm,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.accent,
-    borderRadius: 4,
   },
 });

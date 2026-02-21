@@ -1,0 +1,28 @@
+{
+  "breath": [
+    { "id": "br-ru-01", "prompt": "Длительный выдох", "instruction": "Сделайте глубокий вдох, затем выдыхайте как можно медленнее и ровнее", "durationSeconds": null, "metric": "duration", "difficulty": 1 },
+    { "id": "br-ru-02", "prompt": "Счёт на одном дыхании", "instruction": "Сделайте глубокий вдох, затем считайте 1, 2, 3... как можно дальше на одном дыхании", "durationSeconds": null, "metric": "count", "difficulty": 1 },
+    { "id": "br-ru-03", "prompt": "Длительное С", "instruction": "Сделайте глубокий вдох, затем произнесите 'сссс' как можно дольше", "durationSeconds": null, "metric": "duration", "category": "sz-s", "difficulty": 2 },
+    { "id": "br-ru-04", "prompt": "Длительное З", "instruction": "Сделайте глубокий вдох, затем произнесите 'зззз' как можно дольше", "durationSeconds": null, "metric": "duration", "category": "sz-z", "difficulty": 2 },
+    { "id": "br-ru-05", "prompt": "Глубокое брюшное дыхание", "instruction": "Дышите глубоко в живот. Почувствуйте, как он расширяется. Задержите на 3 секунды, затем медленно выдохните.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "br-ru-06", "prompt": "Упражнение на короткое дыхание", "instruction": "Делайте быстрые короткие вдохи-выдохи. Сосредоточьтесь на диафрагме.", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "facial": [
+    { "id": "fc-ru-01", "prompt": "Широкая улыбка", "instruction": "Улыбнитесь как можно шире и удерживайте", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-ru-02", "prompt": "Трубочка губ", "instruction": "Сожмите губы трубочкой, как для поцелуя, и удерживайте", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-ru-03", "prompt": "Язык из стороны в сторону", "instruction": "Двигайте языком от одного угла рта к другому, медленно", "durationSeconds": 15, "difficulty": 1 },
+    { "id": "fc-ru-04", "prompt": "Растяжка челюсти", "instruction": "Откройте рот как можно шире и удерживайте", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "fc-ru-05", "prompt": "Надувание щёк", "instruction": "Надуйте обе щеки, удерживайте 3 секунды, отпустите. Повторите.", "durationSeconds": 20, "difficulty": 1 },
+    { "id": "fc-ru-06", "prompt": "Отжимания языка", "instruction": "Прижмите язык к нёбу с силой, удерживайте 3 секунды, отпустите. Повторите.", "durationSeconds": 15, "difficulty": 2 },
+    { "id": "fc-ru-07", "prompt": "Растяжка губ", "instruction": "Чередуйте широкую улыбку и трубочку губ. Медленно.", "durationSeconds": 20, "difficulty": 2 },
+    { "id": "fc-ru-08", "prompt": "Круг языком", "instruction": "Медленно двигайте языком по кругу вдоль внутренней стороны губ", "durationSeconds": 15, "difficulty": 2 }
+  ],
+  "warmup": [
+    { "id": "wu-ru-01", "prompt": "Гудение", "instruction": "Гудите ровно на комфортной высоте: Хмммммм", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-ru-02", "prompt": "Вибрация губ", "instruction": "Выдувайте воздух через губы, чтобы они вибрировали", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-ru-03", "prompt": "Ма-ма-ма", "instruction": "Произносите 'Ма ма ма ма ма' повторяя, широко открывая рот", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-ru-04", "prompt": "Длительное А", "instruction": "Произнесите 'Аааааа' как можно громче и дольше", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-ru-05", "prompt": "Длительное И", "instruction": "Произнесите 'Иииии' как можно громче и дольше", "durationSeconds": 10, "difficulty": 1 },
+    { "id": "wu-ru-06", "prompt": "Длительное У", "instruction": "Произнесите 'Ууууу' как можно громче и дольше", "durationSeconds": 10, "difficulty": 1 }
+  ]
+}

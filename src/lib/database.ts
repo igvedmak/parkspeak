@@ -52,6 +52,21 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
       exercises_completed INTEGER DEFAULT 0
     );
   `);
+  // Migrations — add columns for new features (safe to re-run)
+  try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN perception TEXT`); } catch {}
+  try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN measured_value REAL`); } catch {}
+
+  await database.execAsync(`
+    CREATE TABLE IF NOT EXISTS carryover_challenges (
+      id TEXT PRIMARY KEY,
+      date TEXT NOT NULL,
+      challenge_id TEXT NOT NULL,
+      completed INTEGER DEFAULT 0,
+      partner_rating INTEGER,
+      notes TEXT
+    );
+  `);
+
   return database;
 }
 
@@ -120,6 +135,8 @@ export async function endSession(sessionId: string, exercisesCompleted: number) 
 
 // --- Attempts ---
 
+export type Perception = 'quiet' | 'right' | 'loud';
+
 export interface AttemptRecord {
   exerciseId: string;
   exerciseType: string;
@@ -130,6 +147,8 @@ export interface AttemptRecord {
   recognizedText: string;
   targetText: string;
   language: string;
+  perception?: Perception | null;
+  measuredValue?: number | null;
 }
 
 export async function saveAttempt(attempt: AttemptRecord): Promise<string> {
@@ -147,6 +166,8 @@ export async function saveAttempt(attempt: AttemptRecord): Promise<string> {
       if (attempt.intelligibility != null) { cols.push('intelligibility'); vals.push(sql(attempt.intelligibility)); }
       if (attempt.recognizedText) { cols.push('recognized_text'); vals.push(sql(attempt.recognizedText)); }
       if (attempt.targetText) { cols.push('target_text'); vals.push(sql(attempt.targetText)); }
+      if (attempt.perception) { cols.push('perception'); vals.push(sql(attempt.perception)); }
+      if (attempt.measuredValue != null) { cols.push('measured_value'); vals.push(sql(attempt.measuredValue)); }
 
       await database.execAsync(
         `INSERT INTO attempts (${cols.join(', ')}) VALUES (${vals.join(', ')})`
@@ -304,6 +325,159 @@ export async function getRecentAttempts(limit: number = 20): Promise<
     return database.getAllAsync(
       `SELECT id, exercise_type, recorded_at, duration_seconds, avg_loudness, intelligibility, recognized_text FROM attempts ORDER BY recorded_at DESC LIMIT ${sql(limit)}`
     );
+  });
+}
+
+// --- Perception Stats ---
+
+export async function getPerceptionStats(days: number = 30): Promise<{
+  total: number;
+  correct: number;
+}> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const rows = await database.getAllAsync<{
+      perception: string;
+      avg_loudness: number;
+    }>(
+      `SELECT perception, avg_loudness FROM attempts WHERE perception IS NOT NULL AND avg_loudness IS NOT NULL AND recorded_at >= ${sql(since)}`
+    );
+    let correct = 0;
+    for (const row of rows) {
+      const ratio = row.avg_loudness;
+      const p = row.perception;
+      if ((p === 'quiet' && ratio < 1.5) || (p === 'right' && ratio >= 1.5 && ratio <= 3.0) || (p === 'loud' && ratio > 3.0)) {
+        correct++;
+      }
+    }
+    return { total: rows.length, correct };
+  });
+}
+
+// --- Adaptive Difficulty ---
+
+export async function getRecentAccuracyByType(
+  exerciseType: string,
+  limit: number = 10
+): Promise<number | null> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const row = await database.getFirstAsync<{ avg_score: number | null }>(
+      `SELECT AVG(intelligibility) as avg_score FROM (SELECT intelligibility FROM attempts WHERE exercise_type = ${sql(exerciseType)} AND intelligibility IS NOT NULL ORDER BY recorded_at DESC LIMIT ${sql(limit)})`
+    );
+    return row?.avg_score ?? null;
+  });
+}
+
+// --- Carryover Challenges ---
+
+export interface CarryoverRecord {
+  id: string;
+  date: string;
+  challenge_id: string;
+  completed: number;
+  partner_rating: number | null;
+  notes: string | null;
+}
+
+export async function getTodayCarryover(): Promise<CarryoverRecord | null> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const today = new Date().toISOString().split('T')[0];
+    return database.getFirstAsync<CarryoverRecord>(
+      `SELECT * FROM carryover_challenges WHERE date = ${sql(today)}`
+    );
+  });
+}
+
+export async function saveCarryoverCompletion(
+  challengeId: string,
+  partnerRating?: number
+): Promise<void> {
+  return serialize(async () => {
+    return withRetry(async (database) => {
+      const today = new Date().toISOString().split('T')[0];
+      const existing = await database.getFirstAsync<{ id: string }>(
+        `SELECT id FROM carryover_challenges WHERE date = ${sql(today)}`
+      );
+      if (existing) {
+        const sets = ['completed = 1'];
+        if (partnerRating != null) sets.push(`partner_rating = ${sql(partnerRating)}`);
+        await database.execAsync(
+          `UPDATE carryover_challenges SET ${sets.join(', ')} WHERE id = ${sql(existing.id)}`
+        );
+      } else {
+        const id = generateId();
+        const cols = ['id', 'date', 'challenge_id', 'completed'];
+        const vals = [sql(id), sql(today), sql(challengeId), '1'];
+        if (partnerRating != null) { cols.push('partner_rating'); vals.push(sql(partnerRating)); }
+        await database.execAsync(
+          `INSERT INTO carryover_challenges (${cols.join(', ')}) VALUES (${vals.join(', ')})`
+        );
+      }
+    });
+  });
+}
+
+export async function getCarryoverStats(days: number = 30): Promise<{ completed: number; total: number }> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const row = await database.getFirstAsync<{ cnt: number }>(
+      `SELECT COUNT(*) as cnt FROM carryover_challenges WHERE date >= ${sql(since)} AND completed = 1`
+    );
+    return { completed: row?.cnt ?? 0, total: days };
+  });
+}
+
+// --- Attempts in Range (for reports) ---
+
+export async function getExerciseBreakdown(
+  startDate: string,
+  endDate: string
+): Promise<Record<string, number>> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const rows = await database.getAllAsync<{ exercise_type: string; cnt: number }>(
+      `SELECT exercise_type, COUNT(*) as cnt FROM attempts WHERE recorded_at >= ${sql(startDate)} AND recorded_at <= ${sql(endDate)} GROUP BY exercise_type`
+    );
+    const result: Record<string, number> = {};
+    for (const row of rows) {
+      result[row.exercise_type] = row.cnt;
+    }
+    return result;
+  });
+}
+
+export async function getStatsInRange(
+  startDate: string,
+  endDate: string
+): Promise<{
+  sessionsCount: number;
+  totalDurationSeconds: number;
+  exercisesCompleted: number;
+  avgLoudness: number | null;
+  avgIntelligibility: number | null;
+}> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    const row = await database.getFirstAsync<{
+      sessions: number;
+      duration: number;
+      exercises: number;
+      loudness: number | null;
+      intel: number | null;
+    }>(
+      `SELECT COUNT(*) as exercises, SUM(duration_seconds) as duration, AVG(avg_loudness) as loudness, AVG(intelligibility) as intel, COUNT(DISTINCT session_id) as sessions FROM attempts WHERE recorded_at >= ${sql(startDate)} AND recorded_at <= ${sql(endDate)}`
+    );
+    return {
+      sessionsCount: row?.sessions ?? 0,
+      totalDurationSeconds: row?.duration ?? 0,
+      exercisesCompleted: row?.exercises ?? 0,
+      avgLoudness: row?.loudness ?? null,
+      avgIntelligibility: row?.intel ?? null,
+    };
   });
 }
 
