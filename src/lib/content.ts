@@ -1,5 +1,7 @@
+import { resolveLanguage, LANGUAGES } from '../constants/languages';
 import exercisesEn from '../data/exercises-en.json';
 import exercisesHe from '../data/exercises-he.json';
+import exercisesRu from '../data/exercises-ru.json';
 
 export type ExerciseType = 'phonation' | 'reading' | 'articulation' | 'pitch' | 'functional';
 
@@ -18,10 +20,11 @@ type ExerciseData = Record<ExerciseType, Exercise[]>;
 const DATA: Record<string, ExerciseData> = {
   en: exercisesEn as ExerciseData,
   he: exercisesHe as ExerciseData,
+  ru: exercisesRu as ExerciseData,
 };
 
 export function getExercises(language: string, type: ExerciseType): Exercise[] {
-  const lang = language === 'he' ? 'he' : 'en';
+  const lang = resolveLanguage(language);
   return DATA[lang][type] || [];
 }
 
@@ -45,28 +48,24 @@ export function getShuffledExercises(
   return shuffled.slice(0, count);
 }
 
+function langName(lang: string): string {
+  return LANGUAGES[lang as keyof typeof LANGUAGES]?.englishName ?? 'English';
+}
+
 const GENERATION_PROMPTS: Record<ExerciseType, (lang: string) => string> = {
-  phonation: () => '', // phonation doesn't need generation
+  phonation: () => '',
   reading: (lang) =>
-    lang === 'he'
-      ? 'Generate 5 simple Hebrew sentences (8-15 words each) for speech therapy practice. Mix topics: daily life, weather, family, food, hobbies. Return ONLY a JSON array of strings, no explanation.'
-      : 'Generate 5 simple English sentences (8-15 words each) for speech therapy practice. Mix topics: daily life, weather, family, food, hobbies. Return ONLY a JSON array of strings, no explanation.',
+    `Generate 5 simple ${langName(lang)} sentences (8-15 words each) for speech therapy practice. Mix topics: daily life, weather, family, food, hobbies. Return ONLY a JSON array of strings, no explanation.`,
   articulation: (lang) =>
-    lang === 'he'
-      ? 'Generate 5 Hebrew tongue twisters or consonant-heavy phrases for speech articulation practice. Return ONLY a JSON array of strings, no explanation.'
-      : 'Generate 5 English tongue twisters or consonant-heavy phrases for speech articulation practice. Return ONLY a JSON array of strings, no explanation.',
+    `Generate 5 ${langName(lang)} tongue twisters or consonant-heavy phrases for speech articulation practice. Return ONLY a JSON array of strings, no explanation.`,
   pitch: (lang) =>
-    lang === 'he'
-      ? 'Generate 5 Hebrew sentences for pitch/emphasis practice. Each should have one word to emphasize. Return ONLY a JSON array of objects with "sentence" and "highlight" fields, no explanation.'
-      : 'Generate 5 English sentences for pitch/emphasis practice. Each should have one word to emphasize. Return ONLY a JSON array of objects with "sentence" and "highlight" fields, no explanation.',
+    `Generate 5 ${langName(lang)} sentences for pitch/emphasis practice. Each should have one word to emphasize. Return ONLY a JSON array of objects with "sentence" and "highlight" fields, no explanation.`,
   functional: (lang) =>
-    lang === 'he'
-      ? 'Generate 5 everyday Hebrew phrases people use in real life (restaurant, doctor, phone, family, shopping). Return ONLY a JSON array of objects with "sentence" and "category" fields, no explanation.'
-      : 'Generate 5 everyday English phrases people use in real life (restaurant, doctor, phone, family, shopping). Return ONLY a JSON array of objects with "sentence" and "category" fields, no explanation.',
+    `Generate 5 everyday ${langName(lang)} phrases people use in real life (restaurant, doctor, phone, family, shopping). Return ONLY a JSON array of objects with "sentence" and "category" fields, no explanation.`,
 };
 
 function normalizeTarget(text: string): string {
-  return text.toLowerCase().replace(/[^\w\s\u0590-\u05FF]/g, '').trim();
+  return text.toLowerCase().replace(/[^\w\s\u0590-\u05FF\u0400-\u04FF]/g, '').trim();
 }
 
 export async function generateExercises(
@@ -79,34 +78,47 @@ export async function generateExercises(
     return getShuffledExercises(language, type, count);
   }
 
-  const lang = language === 'he' ? 'he' : 'en';
+  const lang = resolveLanguage(language);
   const prompt = GENERATION_PROMPTS[type](lang);
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 1.0,
-    }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
 
-  if (!response.ok) {
-    throw new Error(`Generation failed: ${response.status}`);
+  let responseData: any;
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 1.0,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Generation failed: ${response.status}`);
+    }
+
+    responseData = await response.json();
+  } finally {
+    clearTimeout(timeout);
   }
 
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content?.trim() || '';
+  const content = responseData.choices?.[0]?.message?.content?.trim() || '';
 
   // Extract JSON from response (handle markdown code blocks)
   const jsonMatch = content.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('No JSON array in response');
 
   const parsed = JSON.parse(jsonMatch[0]);
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error('Invalid response: empty or not an array');
+  }
   const timestamp = Date.now().toString(36);
 
   if (type === 'pitch') {
@@ -139,7 +151,7 @@ export async function generateExercises(
 }
 
 export function getExerciseById(language: string, id: string): Exercise | null {
-  const lang = language === 'he' ? 'he' : 'en';
+  const lang = resolveLanguage(language);
   const data = DATA[lang];
   for (const type of Object.keys(data) as ExerciseType[]) {
     const found = data[type].find((e) => e.id === id);

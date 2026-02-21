@@ -9,6 +9,7 @@ import { colors, spacing } from '../../constants/theme';
 import { accessibility } from '../../constants/accessibility';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { setLanguage } from '../../i18n';
+import { LANGUAGES, nextLanguage } from '../../constants/languages';
 import React from 'react';
 
 export default function SettingsScreen() {
@@ -18,14 +19,19 @@ export default function SettingsScreen() {
   const setLang = useSettingsStore((s) => s.setLanguage);
   const openaiApiKey = useSettingsStore((s) => s.openaiApiKey);
   const setOpenaiApiKey = useSettingsStore((s) => s.setOpenaiApiKey);
+  const setOnboarded = useSettingsStore((s) => s.setOnboarded);
 
   const [apiKeyInput, setApiKeyInput] = useState(openaiApiKey);
   const [showApiKey, setShowApiKey] = useState(false);
 
   const toggleLanguage = () => {
-    const newLang = language === 'en' ? 'he' : 'en';
-    setLang(newLang);
-    setLanguage(newLang);
+    const next = nextLanguage(language);
+    setLang(next);
+    setLanguage(next);
+  };
+
+  const handleRecalibrate = () => {
+    setOnboarded(false);
   };
 
   const handleSaveApiKey = () => {
@@ -39,21 +45,20 @@ export default function SettingsScreen() {
     >
       <SettingsRow
         label={t('settings.language')}
-        value={language === 'en' ? 'English' : 'עברית'}
+        value={LANGUAGES[language].label}
         onPress={toggleLanguage}
       />
 
       <SettingsRow
         label={t('settings.calibrate')}
         value={t('settings.calibrateDesc')}
-        onPress={() => {}}
+        onPress={handleRecalibrate}
       />
 
-      {/* OpenAI API Key */}
       <Card style={styles.apiKeyCard}>
-        <Typography variant="body">OpenAI API Key</Typography>
+        <Typography variant="body">{t('settings.apiKey')}</Typography>
         <Typography variant="caption" color={colors.textSecondary}>
-          Required for speech recognition. Get a key at platform.openai.com
+          {t('settings.apiKeyDesc')}
         </Typography>
         <View style={styles.apiKeyRow}>
           <TextInput
@@ -68,20 +73,20 @@ export default function SettingsScreen() {
           />
           <Pressable onPress={() => setShowApiKey(!showApiKey)} style={styles.toggleBtn}>
             <Typography variant="caption">
-              {showApiKey ? 'Hide' : 'Show'}
+              {showApiKey ? t('settings.hide') : t('settings.show')}
             </Typography>
           </Pressable>
         </View>
         {apiKeyInput !== openaiApiKey && (
-          <Button title="Save" onPress={handleSaveApiKey} variant="primary" />
+          <Button title={t('common.save')} onPress={handleSaveApiKey} variant="primary" />
         )}
         {openaiApiKey ? (
           <Typography variant="caption" color={colors.success}>
-            API key saved
+            {t('settings.apiKeySaved')}
           </Typography>
         ) : (
           <Typography variant="caption" color={colors.warning}>
-            No API key set — speech scoring disabled
+            {t('settings.apiKeyMissing')}
           </Typography>
         )}
       </Card>

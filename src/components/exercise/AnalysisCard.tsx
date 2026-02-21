@@ -59,7 +59,7 @@ export function AnalysisCard({ wordResults, recognizedText }: AnalysisCardProps)
       {recognizedText.length > 0 && (
         <View>
           <Typography variant="caption" color={colors.textSecondary}>
-            {i18n.language === 'he' ? ':שמענו' : 'We heard:'}
+            {t('exercise.weHeard')}
           </Typography>
           <Typography variant="body">"{recognizedText}"</Typography>
         </View>

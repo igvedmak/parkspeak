@@ -9,6 +9,7 @@ import { colors, spacing, borderRadius } from '../../constants/theme';
 import { loudnessRatio, loudnessToVisual, getVolumeZone, type VolumeZone } from '../../lib/audio';
 import { useSessionStore } from '../../store/useSessionStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { thresholds } from '../../constants/thresholds';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 
@@ -19,9 +20,9 @@ const ZONE_COLORS: Record<VolumeZone, string> = {
 };
 
 const BAR_HEIGHT = 32;
-const TARGET_MIN = 1.5;
-const TARGET_MAX = 3.0;
-const MAX_RATIO = 4.0;
+const TARGET_MIN = thresholds.loudnessGood;
+const TARGET_MAX = thresholds.loudnessMax;
+const MAX_RATIO = thresholds.loudnessVisualMax;
 
 export function VolumeMeter() {
   const { t } = useTranslation();
@@ -54,7 +55,7 @@ export function VolumeMeter() {
             ? t('exercise.tooQuiet')
             : zone === 'good'
               ? t('exercise.goodVolume')
-              : ''}
+              : t('exercise.tooLoud')}
         </Typography>
       </View>
 

@@ -32,6 +32,7 @@ export function Button({
       ]}
       accessibilityRole="button"
       accessibilityLabel={title}
+      accessibilityState={{ disabled }}
     >
       <Text
         style={[

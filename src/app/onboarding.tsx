@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -101,6 +101,16 @@ export default function OnboardingScreen() {
     setIsCalibrating(false);
     setCurrentRms(0);
   }, [setBaselineRms, setCurrentRms]);
+
+  // Cleanup recording if user leaves mid-calibration
+  useEffect(() => {
+    return () => {
+      if (recordingRef.current) {
+        recordingRef.current.stopAndUnloadAsync().catch(() => {});
+        recordingRef.current = null;
+      }
+    };
+  }, []);
 
   const finish = useCallback(() => {
     setOnboarded(true);

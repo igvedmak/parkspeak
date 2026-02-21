@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { getTodayStats, getCurrentStreak, type DailyStat } from '../../lib/database';
 import { colors, spacing } from '../../constants/theme';
+import { thresholds } from '../../constants/thresholds';
 import React from 'react';
 
 export default function HomeScreen() {
@@ -63,7 +64,7 @@ export default function HomeScreen() {
               <View style={styles.todayItem}>
                 <Typography
                   variant="title"
-                  color={todayStats.avg_loudness >= 1.5 ? colors.success : colors.warning}
+                  color={todayStats.avg_loudness >= thresholds.loudnessGood ? colors.success : colors.warning}
                 >
                   {todayStats.avg_loudness.toFixed(1)}x
                 </Typography>

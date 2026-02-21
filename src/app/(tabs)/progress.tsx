@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from 'expo-router';
@@ -13,6 +13,7 @@ import {
   type DailyStat,
 } from '../../lib/database';
 import { colors, spacing, borderRadius } from '../../constants/theme';
+import { thresholds } from '../../constants/thresholds';
 import React from 'react';
 
 type Period = 'week' | 'month';
@@ -52,10 +53,6 @@ export default function ProgressScreen() {
     }, [loadData])
   );
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   const totalExercises = stats.reduce((sum, s) => sum + s.exercises_completed, 0);
   const totalMinutes = Math.round(
     stats.reduce((sum, s) => sum + s.total_duration_seconds, 0) / 60
@@ -74,6 +71,7 @@ export default function ProgressScreen() {
   })();
 
   const hasData = stats.length > 0;
+  const maxExercises = Math.max(...stats.map((s) => s.exercises_completed), 1);
 
   return (
     <ScrollView
@@ -129,7 +127,7 @@ export default function ProgressScreen() {
             <View style={styles.averagesRow}>
               {avgLoudness != null && (
                 <View style={styles.avgItem}>
-                  <Typography variant="title" color={avgLoudness >= 1.5 ? colors.success : colors.warning}>
+                  <Typography variant="title" color={avgLoudness >= thresholds.loudnessGood ? colors.success : colors.warning}>
                     {avgLoudness.toFixed(1)}x
                   </Typography>
                   <Typography variant="caption">{t('progress.loudness')}</Typography>
@@ -137,7 +135,7 @@ export default function ProgressScreen() {
               )}
               {avgIntelligibility != null && (
                 <View style={styles.avgItem}>
-                  <Typography variant="title" color={avgIntelligibility >= 70 ? colors.success : colors.warning}>
+                  <Typography variant="title" color={avgIntelligibility >= thresholds.intelligibilityGood ? colors.success : colors.warning}>
                     {avgIntelligibility}%
                   </Typography>
                   <Typography variant="caption">{t('progress.clarity')}</Typography>
@@ -153,7 +151,6 @@ export default function ProgressScreen() {
             </Typography>
             <View style={styles.chartContainer}>
               {stats.map((day) => {
-                const maxExercises = Math.max(...stats.map((s) => s.exercises_completed), 1);
                 const height = Math.max((day.exercises_completed / maxExercises) * 100, 4);
                 const dayLabel = new Date(day.date + 'T12:00:00').toLocaleDateString(undefined, {
                   weekday: 'short',
@@ -206,7 +203,7 @@ export default function ProgressScreen() {
                     {attempt.avg_loudness != null && (
                       <Typography
                         variant="caption"
-                        color={attempt.avg_loudness >= 1.5 ? colors.success : colors.warning}
+                        color={attempt.avg_loudness >= thresholds.loudnessGood ? colors.success : colors.warning}
                       >
                         {attempt.avg_loudness.toFixed(1)}x
                       </Typography>
@@ -214,7 +211,7 @@ export default function ProgressScreen() {
                     {attempt.intelligibility != null && (
                       <Typography
                         variant="caption"
-                        color={attempt.intelligibility >= 70 ? colors.success : colors.warning}
+                        color={attempt.intelligibility >= thresholds.intelligibilityGood ? colors.success : colors.warning}
                       >
                         {attempt.intelligibility}%
                       </Typography>
@@ -240,9 +237,10 @@ function PeriodButton({
   onPress: () => void;
 }) {
   return (
-    <View
+    <Pressable
+      onPress={onPress}
       style={[styles.periodButton, active && styles.periodButtonActive]}
-      onTouchEnd={onPress}
+      accessibilityRole="button"
     >
       <Typography
         variant="body"
@@ -252,7 +250,7 @@ function PeriodButton({
       >
         {label}
       </Typography>
-    </View>
+    </Pressable>
   );
 }
 

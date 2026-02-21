@@ -53,13 +53,15 @@
     "greatJob": "!כל הכבוד",
     "keepPracticing": "!המשך לתרגל",
     "tooQuiet": "נסה לדבר יותר חזק",
+    "tooLoud": "חזק מדי — נסה להנמיך קצת",
     "goodVolume": "!עוצמה טובה",
     "addApiKey": "הוסף מפתח OpenAI בהגדרות לניקוד דיבור",
     "perfectScoreRequired": "אמור את כל המילים נכון כדי להמשיך",
     "showAnalysis": "הצג ניתוח מפורט",
     "hideAnalysis": "הסתר ניתוח",
     "analysisTitle": "ניתוח מילים",
-    "tips": ":טיפים להגייה"
+    "tips": ":טיפים להגייה",
+    "weHeard": ":שמענו"
   },
   "progress": {
     "title": "ההתקדמות שלך",
@@ -82,6 +84,12 @@
     "calibrateDesc": "הגדר את עוצמת הדיבור הבסיסית שלך",
     "textSize": "גודל טקסט",
     "reminders": "תזכורות יומיות",
+    "apiKey": "מפתח OpenAI API",
+    "apiKeyDesc": "נדרש לניקוד דיבור אוטומטי",
+    "apiKeySaved": "מפתח API נשמר",
+    "apiKeyMissing": "לא הוגדר מפתח API — ניקוד מושבת",
+    "show": "הצג",
+    "hide": "הסתר",
     "about": "אודות פארקספיק",
     "version": "גרסה"
   },

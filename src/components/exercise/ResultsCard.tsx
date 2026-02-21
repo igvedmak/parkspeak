@@ -3,6 +3,7 @@ import { Typography } from '../ui/Typography';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { colors, spacing } from '../../constants/theme';
+import { thresholds } from '../../constants/thresholds';
 import { formatDuration } from '../../lib/audio';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
@@ -27,9 +28,9 @@ export function ResultsCard({
   requirePerfectScore = false,
 }: ResultsCardProps) {
   const { t } = useTranslation();
-  const isGood =
-    (loudnessRatio !== null && loudnessRatio >= 1.5) ||
-    (intelligibility !== null && intelligibility >= 70);
+  const loudnessOk = loudnessRatio === null || loudnessRatio >= thresholds.loudnessGood;
+  const intelligibilityOk = intelligibility === null || intelligibility >= thresholds.intelligibilityGood;
+  const isGood = loudnessOk && intelligibilityOk;
 
   return (
     <Card style={styles.container}>
@@ -42,14 +43,14 @@ export function ResultsCard({
           <MetricRow
             label={t('exercise.volume')}
             value={`${loudnessRatio.toFixed(1)}x`}
-            good={loudnessRatio >= 1.5}
+            good={loudnessRatio >= thresholds.loudnessGood}
           />
         )}
         {intelligibility !== null && (
           <MetricRow
             label={t('exercise.accuracy')}
             value={`${intelligibility}%`}
-            good={intelligibility >= 70}
+            good={intelligibility >= thresholds.intelligibilityGood}
           />
         )}
         <MetricRow

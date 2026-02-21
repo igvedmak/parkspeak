@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { colors } from '../constants/theme';
 import { useSettingsStore } from '../store/useSettingsStore';
-import '../i18n';
+import { setLanguage } from '../i18n';
 import React from 'react';
 
 function useOnboardingGuard() {
@@ -36,6 +36,11 @@ function useOnboardingGuard() {
 
 export default function RootLayout() {
   useOnboardingGuard();
+
+  const language = useSettingsStore((s) => s.language);
+  useEffect(() => {
+    setLanguage(language);
+  }, [language]);
 
   return (
     <GestureHandlerRootView style={styles.root}>

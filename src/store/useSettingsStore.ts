@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { type AppLanguage } from '../constants/languages';
 
 interface SettingsState {
   hasOnboarded: boolean;
-  language: 'en' | 'he';
+  language: AppLanguage;
   baselineRms: number | null;
   targetMultiplier: number;
   textSizeScale: number;
@@ -13,7 +14,7 @@ interface SettingsState {
   openaiApiKey: string;
 
   setOnboarded: (value: boolean) => void;
-  setLanguage: (lang: 'en' | 'he') => void;
+  setLanguage: (lang: AppLanguage) => void;
   setBaselineRms: (rms: number) => void;
   setTargetMultiplier: (multiplier: number) => void;
   setTextSizeScale: (scale: number) => void;

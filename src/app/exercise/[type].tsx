@@ -76,6 +76,16 @@ export default function ExerciseScreen() {
     return () => { cancelled = true; };
   }, []);
 
+  // Cleanup recording on unmount
+  useEffect(() => {
+    return () => {
+      if (isRecording) {
+        stopRecording().catch(() => {});
+      }
+      reset();
+    };
+  }, []);
+
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('ready');
   const [resultLoudness, setResultLoudness] = useState<number | null>(null);

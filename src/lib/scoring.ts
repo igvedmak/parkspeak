@@ -1,3 +1,5 @@
+import { LANGUAGES, resolveLanguage } from '../constants/languages';
+
 /**
  * Calculate word-level accuracy between recognized text and target text.
  * Returns a score from 0 to 100.
@@ -53,23 +55,13 @@ export function getWordResults(
 }
 
 export function getPronunciationTip(word: string, language: string): string {
-  if (language === 'he') {
-    return `נסה להגיד "${word}" לאט יותר, תוך הדגשת כל הברה`;
-  }
-  const hasCluster = /[bcdfghjklmnpqrstvwxyz]{2,}/i.test(word);
-  if (hasCluster) {
-    return `Slow down on "${word}" — exaggerate each consonant`;
-  }
-  if (word.length >= 8) {
-    return `Break "${word}" into syllables and say each one clearly`;
-  }
-  return `Try saying "${word}" slowly and with more volume`;
+  return LANGUAGES[resolveLanguage(language)].pronunciationTip(word);
 }
 
 function normalizeText(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[^\w\s\u0590-\u05FF]/g, '')
+    .replace(/[^\w\s\u0590-\u05FF\u0400-\u04FF]/g, '')
     .split(/\s+/)
     .filter((w) => w.length > 0);
 }

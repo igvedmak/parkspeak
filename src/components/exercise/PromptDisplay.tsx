@@ -24,7 +24,8 @@ export function PromptDisplay({
       );
     }
 
-    const parts = promptText.split(new RegExp(`(${highlightWord})`, 'gi'));
+    const escaped = highlightWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = promptText.split(new RegExp(`(${escaped})`, 'gi'));
     return (
       <Typography variant="bodyLarge" align="center">
         {parts.map((part, i) =>

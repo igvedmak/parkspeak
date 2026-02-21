@@ -53,13 +53,15 @@
     "greatJob": "Great job!",
     "keepPracticing": "Keep practicing!",
     "tooQuiet": "Try speaking louder",
+    "tooLoud": "Too loud — ease up a bit",
     "goodVolume": "Good volume!",
     "addApiKey": "Add your OpenAI API key in Settings for speech scoring",
     "perfectScoreRequired": "Say all words correctly to continue",
     "showAnalysis": "Show Detailed Analysis",
     "hideAnalysis": "Hide Analysis",
     "analysisTitle": "Word Analysis",
-    "tips": "Pronunciation Tips:"
+    "tips": "Pronunciation Tips:",
+    "weHeard": "We heard:"
   },
   "progress": {
     "title": "Your Progress",
@@ -82,6 +84,12 @@
     "calibrateDesc": "Set your baseline speaking volume",
     "textSize": "Text Size",
     "reminders": "Daily Reminders",
+    "apiKey": "OpenAI API Key",
+    "apiKeyDesc": "Required for speech-to-text scoring",
+    "apiKeySaved": "API key saved",
+    "apiKeyMissing": "No API key set — scoring disabled",
+    "show": "Show",
+    "hide": "Hide",
     "about": "About ParkSpeak",
     "version": "Version"
   },
