@@ -182,6 +182,18 @@
     "about": "About ParkSpeak",
     "version": "Version"
   },
+  "camera": {
+    "enable": "Enable camera",
+    "disable": "Disable camera",
+    "notAvailable": "Camera not available",
+    "noPermission": "Camera permission denied",
+    "noDevice": "No front camera found",
+    "noFace": "No face detected",
+    "mouth": "Mouth opening",
+    "openWider": "Open wider",
+    "goodMovement": "Good movement",
+    "great": "Great!"
+  },
   "onboarding": {
     "welcome": "Welcome to ParkSpeak",
     "welcomeDesc": "Daily speech exercises designed for people with Parkinson's disease",

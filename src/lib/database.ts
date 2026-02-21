@@ -55,6 +55,9 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
   // Migrations — add columns for new features (safe to re-run)
   try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN perception TEXT`); } catch {}
   try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN measured_value REAL`); } catch {}
+  try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN avg_mouth_opening REAL`); } catch {}
+  try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN avg_lip_compression REAL`); } catch {}
+  try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN avg_jaw_displacement REAL`); } catch {}
 
   await database.execAsync(`
     CREATE TABLE IF NOT EXISTS carryover_challenges (
@@ -149,6 +152,9 @@ export interface AttemptRecord {
   language: string;
   perception?: Perception | null;
   measuredValue?: number | null;
+  avgMouthOpening?: number | null;
+  avgLipCompression?: number | null;
+  avgJawDisplacement?: number | null;
 }
 
 export async function saveAttempt(attempt: AttemptRecord): Promise<string> {
@@ -168,6 +174,9 @@ export async function saveAttempt(attempt: AttemptRecord): Promise<string> {
       if (attempt.targetText) { cols.push('target_text'); vals.push(sql(attempt.targetText)); }
       if (attempt.perception) { cols.push('perception'); vals.push(sql(attempt.perception)); }
       if (attempt.measuredValue != null) { cols.push('measured_value'); vals.push(sql(attempt.measuredValue)); }
+      if (attempt.avgMouthOpening != null) { cols.push('avg_mouth_opening'); vals.push(sql(attempt.avgMouthOpening)); }
+      if (attempt.avgLipCompression != null) { cols.push('avg_lip_compression'); vals.push(sql(attempt.avgLipCompression)); }
+      if (attempt.avgJawDisplacement != null) { cols.push('avg_jaw_displacement'); vals.push(sql(attempt.avgJawDisplacement)); }
 
       await database.execAsync(
         `INSERT INTO attempts (${cols.join(', ')}) VALUES (${vals.join(', ')})`

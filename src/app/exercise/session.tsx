@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { VolumeMeter } from '../../components/audio/VolumeMeter';
 import { RecordButton } from '../../components/audio/RecordButton';
+import { CameraPreview } from '../../components/video/CameraPreview';
 import { PromptDisplay } from '../../components/exercise/PromptDisplay';
 import { ResultsCard } from '../../components/exercise/ResultsCard';
 import { AnalysisCard } from '../../components/exercise/AnalysisCard';
@@ -62,6 +64,7 @@ export default function SessionScreen() {
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('ready');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
 
   const [resultLoudness, setResultLoudness] = useState<number | null>(null);
   const [resultIntelligibility, setResultIntelligibility] = useState<number | null>(null);
@@ -279,6 +282,26 @@ export default function SessionScreen() {
               highlightWord={currentStep.exercise.highlight}
               emotion={currentStep.exercise.emotion}
             />
+
+            {showCamera ? (
+              <CameraPreview
+                isRecording={isRecording}
+                onToggle={() => setShowCamera(false)}
+              />
+            ) : (
+              <Pressable
+                style={styles.cameraToggle}
+                onPress={() => setShowCamera(true)}
+                accessibilityRole="button"
+                accessibilityLabel={t('camera.enable')}
+              >
+                <Ionicons name="videocam-outline" size={20} color={colors.accent} />
+                <Typography variant="caption" color={colors.accent}>
+                  {t('camera.enable')}
+                </Typography>
+              </Pressable>
+            )}
+
             <VolumeMeter />
             {phase === 'recording' && (
               <Typography variant="body" align="center" color={colors.textSecondary}>
@@ -328,5 +351,12 @@ const styles = StyleSheet.create({
   summaryItem: {
     alignItems: 'center',
     gap: spacing.xs,
+  },
+  cameraToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
   },
 });
