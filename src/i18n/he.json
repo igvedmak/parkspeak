@@ -71,7 +71,9 @@
     "howLoud": "?איך זה הרגיש מבחינת עוצמה",
     "perceptionQuiet": "חלש מדי",
     "perceptionRight": "בדיוק נכון",
-    "perceptionLoud": "חזק מדי"
+    "perceptionLoud": "חזק מדי",
+    "hearSentence": "שמע את המשפט לאט",
+    "tapToHearWord": "לחץ לשמוע את \"{{word}}\""
   },
   "emotions": {
     "happy": "אמור בשמחה",

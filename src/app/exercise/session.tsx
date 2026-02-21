@@ -21,6 +21,7 @@ import { loudnessRatio } from '../../lib/audio';
 import { calculateIntelligibility, getWordResults, type WordResult } from '../../lib/scoring';
 import { getShuffledExercises, type ExerciseType, type Exercise } from '../../lib/content';
 import { saveAttempt, createSession, endSession, type Perception } from '../../lib/database';
+import { stopSpeech } from '../../lib/speech';
 import { colors, spacing } from '../../constants/theme';
 import React from 'react';
 
@@ -95,6 +96,7 @@ export default function SessionScreen() {
   useEffect(() => {
     return () => {
       if (isRecording) stopRecording().catch(() => {});
+      stopSpeech();
       reset();
     };
   }, []);
@@ -280,7 +282,7 @@ export default function SessionScreen() {
               requirePerfectScore={!!currentStep?.exercise.target}
             />
             {wordResults.length > 0 && (
-              <AnalysisCard wordResults={wordResults} recognizedText={recognizedText} />
+              <AnalysisCard wordResults={wordResults} recognizedText={recognizedText} targetText={currentStep?.exercise.target ?? ''} />
             )}
           </>
         ) : currentStep ? (

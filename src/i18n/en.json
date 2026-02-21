@@ -71,7 +71,9 @@
     "howLoud": "How loud did that feel?",
     "perceptionQuiet": "Too Quiet",
     "perceptionRight": "Just Right",
-    "perceptionLoud": "Too Loud"
+    "perceptionLoud": "Too Loud",
+    "hearSentence": "Hear full sentence slowly",
+    "tapToHearWord": "Tap to hear \"{{word}}\""
   },
   "emotions": {
     "happy": "Say it HAPPILY",

@@ -20,6 +20,7 @@ import { AnalysisCard } from '../../components/exercise/AnalysisCard';
 import { getShuffledExercises, generateExercises, type ExerciseType, type Exercise } from '../../lib/content';
 import { saveAttempt, getRecentAccuracyByType, type Perception } from '../../lib/database';
 import { getTargetDifficulty } from '../../lib/difficulty';
+import { stopSpeech } from '../../lib/speech';
 import { colors, spacing } from '../../constants/theme';
 import React from 'react';
 
@@ -88,6 +89,7 @@ export default function ExerciseScreen() {
       if (isRecording) {
         stopRecording().catch(() => {});
       }
+      stopSpeech();
       reset();
     };
   }, []);
@@ -275,6 +277,7 @@ export default function ExerciseScreen() {
               <AnalysisCard
                 wordResults={wordResults}
                 recognizedText={recognizedText}
+                targetText={currentExercise.target ?? ''}
               />
             )}
 

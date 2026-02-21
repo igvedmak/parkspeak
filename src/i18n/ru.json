@@ -71,7 +71,9 @@
     "howLoud": "Насколько громко вам показалось?",
     "perceptionQuiet": "Слишком тихо",
     "perceptionRight": "В самый раз",
-    "perceptionLoud": "Слишком громко"
+    "perceptionLoud": "Слишком громко",
+    "hearSentence": "Прослушать предложение медленно",
+    "tapToHearWord": "Нажмите, чтобы услышать \"{{word}}\""
   },
   "emotions": {
     "happy": "Скажите РАДОСТНО",
