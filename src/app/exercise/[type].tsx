@@ -22,7 +22,7 @@ import { getShuffledExercises, generateExercises, type ExerciseType, type Exerci
 import { saveAttempt, getRecentAccuracyByType } from '../../lib/database';
 import { getTargetDifficulty } from '../../lib/difficulty';
 import { stopSpeech } from '../../lib/speech';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing, borderRadius } from '../../constants/theme';
 import React from 'react';
 
 const INSTRUCTION_KEYS: Record<ExerciseType, string> = {
@@ -339,7 +339,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.accentLight,
+    borderRadius: borderRadius.full,
   },
 });

@@ -1,8 +1,9 @@
 import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../ui/Typography';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing, borderRadius } from '../../constants/theme';
 import { thresholds } from '../../constants/thresholds';
 import { formatDuration } from '../../lib/audio';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,14 @@ export function ResultsCard({
 
   return (
     <Card style={styles.container}>
+      <View style={[styles.iconCircle, { backgroundColor: isGood ? colors.successLight : colors.warningLight }]}>
+        <Ionicons
+          name={isGood ? 'checkmark-circle' : 'arrow-up-circle'}
+          size={40}
+          color={isGood ? colors.success : colors.warning}
+        />
+      </View>
+
       <Typography variant="title" align="center">
         {isGood ? t('exercise.greatJob') : t('exercise.keepPracticing')}
       </Typography>
@@ -61,7 +70,7 @@ export function ResultsCard({
       </View>
 
       <View style={styles.actions}>
-        <Button title={t('common.retry')} onPress={onRetry} variant="outline" />
+        <Button title={t('common.retry')} onPress={onRetry} variant="outline" icon="refresh" />
         {onNext && (() => {
           const blocked = requirePerfectScore && intelligibility !== null && intelligibility < 100;
           return (
@@ -70,10 +79,11 @@ export function ResultsCard({
               onPress={onNext}
               variant={blocked ? 'secondary' : 'primary'}
               disabled={blocked}
+              icon="arrow-forward"
             />
           );
         })()}
-        <Button title={t('common.done')} onPress={onDone} />
+        <Button title={t('common.done')} onPress={onDone} icon="checkmark" />
       </View>
       {onNext && requirePerfectScore && intelligibility !== null && intelligibility < 100 && (
         <Typography variant="caption" align="center" color={colors.warning}>
@@ -96,13 +106,15 @@ function MetricRow({
   return (
     <View style={styles.metricRow}>
       <Typography variant="body">{label}</Typography>
-      <Typography
-        variant="body"
-        color={good ? colors.success : colors.warning}
-        style={{ fontWeight: '600' }}
-      >
-        {value}
-      </Typography>
+      <View style={[styles.metricBadge, { backgroundColor: good ? colors.successLight : colors.warningLight }]}>
+        <Typography
+          variant="body"
+          color={good ? colors.success : colors.warning}
+          style={{ fontWeight: '600' }}
+        >
+          {value}
+        </Typography>
+      </View>
     </View>
   );
 }
@@ -110,15 +122,29 @@ function MetricRow({
 const styles = StyleSheet.create({
   container: {
     gap: spacing.lg,
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   metrics: {
-    gap: spacing.md,
+    gap: spacing.sm,
+    width: '100%',
   },
   metricRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: spacing.xs,
+  },
+  metricBadge: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.sm,
   },
   actions: {
     flexDirection: 'row',

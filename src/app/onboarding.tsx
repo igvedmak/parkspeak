@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '../components/ui/Typography';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -13,7 +14,9 @@ import { useSettingsStore } from '../store/useSettingsStore';
 import { colors, spacing } from '../constants/theme';
 import React from 'react';
 
-type Step = 'welcome' | 'microphone' | 'calibration' | 'done';
+type Step = 'welcome' | 'microphone' | 'calibration';
+
+const STEPS: Step[] = ['welcome', 'microphone', 'calibration'];
 
 export default function OnboardingScreen() {
   const { t } = useTranslation();
@@ -29,6 +32,8 @@ export default function OnboardingScreen() {
   const [calibrationDone, setCalibrationDone] = useState(false);
   const recordingRef = useRef<Audio.Recording | null>(null);
   const rmsAccumRef = useRef({ sum: 0, count: 0 });
+
+  const currentStepIndex = STEPS.indexOf(step);
 
   const requestMic = useCallback(async () => {
     const { granted } = await Audio.requestPermissionsAsync();
@@ -106,7 +111,7 @@ export default function OnboardingScreen() {
   useEffect(() => {
     return () => {
       if (recordingRef.current) {
-        recordingRef.current.stopAndUnloadAsync().catch(() => {});
+        recordingRef.current.stopAndUnloadAsync().catch(() => { });
         recordingRef.current = null;
       }
     };
@@ -119,32 +124,51 @@ export default function OnboardingScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + spacing.xl, paddingBottom: insets.bottom + spacing.xl }]}>
+      {/* Step indicator dots */}
+      <View style={styles.dotsRow}>
+        {STEPS.map((s, i) => (
+          <View
+            key={s}
+            style={[
+              styles.dot,
+              i <= currentStepIndex ? styles.dotActive : styles.dotInactive,
+            ]}
+          />
+        ))}
+      </View>
+
       {step === 'welcome' && (
         <View style={styles.stepContainer}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="chatbubbles" size={48} color={colors.accent} />
+          </View>
           <Typography variant="heading" align="center">
             {t('onboarding.welcome')}
           </Typography>
-          <Typography variant="body" align="center" color={colors.textSecondary}>
+          <Typography variant="bodyLarge" align="center" color={colors.textSecondary}>
             {t('onboarding.welcomeDesc')}
           </Typography>
           <View style={styles.spacer} />
-          <Button title={t('common.next')} onPress={() => setStep('microphone')} />
+          <Button title={t('common.next')} onPress={() => setStep('microphone')} size="large" icon="arrow-forward" />
         </View>
       )}
 
       {step === 'microphone' && (
         <View style={styles.stepContainer}>
+          <View style={styles.iconCircle}>
+            <Ionicons name="mic" size={48} color={colors.accent} />
+          </View>
           <Typography variant="heading" align="center">
             {t('onboarding.microphone')}
           </Typography>
-          <Typography variant="body" align="center" color={colors.textSecondary}>
+          <Typography variant="bodyLarge" align="center" color={colors.textSecondary}>
             {t('onboarding.microphoneDesc')}
           </Typography>
           <View style={styles.spacer} />
           {micGranted ? (
-            <Button title={t('common.next')} onPress={() => setStep('calibration')} />
+            <Button title={t('common.next')} onPress={() => setStep('calibration')} size="large" icon="arrow-forward" />
           ) : (
-            <Button title={t('onboarding.microphone')} onPress={requestMic} />
+            <Button title={t('onboarding.microphone')} onPress={requestMic} size="large" icon="mic" />
           )}
         </View>
       )}
@@ -173,21 +197,24 @@ export default function OnboardingScreen() {
           )}
 
           {calibrationDone && (
-            <Typography variant="body" align="center" color={colors.success}>
-              {t('onboarding.calibrationDone')}
-            </Typography>
+            <View style={styles.doneRow}>
+              <Ionicons name="checkmark-circle" size={24} color={colors.success} />
+              <Typography variant="body" color={colors.success}>
+                {t('onboarding.calibrationDone')}
+              </Typography>
+            </View>
           )}
 
           <View style={styles.spacer} />
 
           {!isCalibrating && !calibrationDone && (
-            <Button title={t('common.start')} onPress={startCalibration} />
+            <Button title={t('common.start')} onPress={startCalibration} size="large" icon="play" />
           )}
           {isCalibrating && (
-            <Button title={t('common.stop')} onPress={stopCalibration} variant="secondary" />
+            <Button title={t('common.stop')} onPress={stopCalibration} variant="secondary" size="large" icon="stop" />
           )}
           {calibrationDone && (
-            <Button title={t('onboarding.getStarted')} onPress={finish} />
+            <Button title={t('onboarding.getStarted')} onPress={finish} size="large" icon="checkmark" />
           )}
         </View>
       )}
@@ -201,12 +228,44 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
+  dotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  dotActive: {
+    backgroundColor: colors.accent,
+  },
+  dotInactive: {
+    backgroundColor: colors.border,
+  },
   stepContainer: {
     flex: 1,
     justifyContent: 'center',
     gap: spacing.xl,
   },
+  iconCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.accentLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
   spacer: {
     flex: 1,
+  },
+  doneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
 });

@@ -15,9 +15,32 @@ import {
   getPerceptionStats,
   type DailyStat,
 } from '../../lib/database';
-import { colors, spacing, borderRadius } from '../../constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, borderRadius, exerciseColors } from '../../constants/theme';
 import { thresholds } from '../../constants/thresholds';
 import React from 'react';
+
+const EXERCISE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  phonation: 'volume-high',
+  reading: 'book',
+  articulation: 'chatbubble-ellipses',
+  pitch: 'musical-notes',
+  functional: 'chatbubbles',
+  warmup: 'mic',
+  breath: 'fitness',
+  facial: 'happy',
+};
+
+const EXERCISE_COLOR_KEYS: Record<string, keyof typeof exerciseColors> = {
+  phonation: 'phonation',
+  reading: 'reading',
+  articulation: 'articulation',
+  pitch: 'pitch',
+  functional: 'functional',
+  warmup: 'warmup',
+  breath: 'breath',
+  facial: 'facial',
+};
 
 type Period = 'week' | 'month';
 
@@ -185,16 +208,21 @@ export default function ProgressScreen() {
                 const dayLabel = new Date(day.date + 'T12:00:00').toLocaleDateString(undefined, {
                   weekday: 'short',
                 });
+                const hasExercises = day.exercises_completed > 0;
                 return (
                   <View key={day.date} style={styles.barColumn}>
+                    {hasExercises && (
+                      <Typography variant="caption" align="center" style={styles.barCount}>
+                        {day.exercises_completed}
+                      </Typography>
+                    )}
                     <View style={styles.barWrapper}>
                       <View
                         style={[
                           styles.bar,
                           {
                             height: `${height}%`,
-                            backgroundColor:
-                              day.exercises_completed > 0 ? colors.accent : colors.border,
+                            backgroundColor: hasExercises ? colors.accent : colors.border,
                           },
                         ]}
                       />
@@ -214,41 +242,47 @@ export default function ProgressScreen() {
               <Typography variant="body" style={styles.sectionLabel}>
                 {t('progress.recentExercises')}
               </Typography>
-              {recentAttempts.map((attempt) => (
-                <View key={attempt.id} style={styles.attemptRow}>
-                  <View style={styles.attemptInfo}>
-                    <Typography variant="body">
-                      {t(`exercises.${attempt.exercise_type}`)}
-                    </Typography>
-                    <Typography variant="caption">
-                      {new Date(attempt.recorded_at).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </Typography>
-                  </View>
-                  <View style={styles.attemptMetrics}>
-                    {attempt.avg_loudness != null && (
-                      <Typography
-                        variant="caption"
-                        color={attempt.avg_loudness >= thresholds.loudnessGood ? colors.success : colors.warning}
-                      >
-                        {attempt.avg_loudness.toFixed(1)}x
+              {recentAttempts.map((attempt) => {
+                const iconName = EXERCISE_ICONS[attempt.exercise_type] || 'ellipse';
+                const colorKey = EXERCISE_COLOR_KEYS[attempt.exercise_type];
+                const iconColor = colorKey ? exerciseColors[colorKey] : colors.accent;
+                return (
+                  <View key={attempt.id} style={styles.attemptRow}>
+                    <Ionicons name={iconName} size={20} color={iconColor} style={styles.attemptIcon} />
+                    <View style={styles.attemptInfo}>
+                      <Typography variant="body">
+                        {t(`exercises.${attempt.exercise_type}`)}
                       </Typography>
-                    )}
-                    {attempt.intelligibility != null && (
-                      <Typography
-                        variant="caption"
-                        color={attempt.intelligibility >= thresholds.intelligibilityGood ? colors.success : colors.warning}
-                      >
-                        {attempt.intelligibility}%
+                      <Typography variant="caption">
+                        {new Date(attempt.recorded_at).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </Typography>
-                    )}
+                    </View>
+                    <View style={styles.attemptMetrics}>
+                      {attempt.avg_loudness != null && (
+                        <Typography
+                          variant="caption"
+                          color={attempt.avg_loudness >= thresholds.loudnessGood ? colors.success : colors.warning}
+                        >
+                          {attempt.avg_loudness.toFixed(1)}x
+                        </Typography>
+                      )}
+                      {attempt.intelligibility != null && (
+                        <Typography
+                          variant="caption"
+                          color={attempt.intelligibility >= thresholds.intelligibilityGood ? colors.success : colors.warning}
+                        >
+                          {attempt.intelligibility}%
+                        </Typography>
+                      )}
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </Card>
           )}
 
@@ -261,7 +295,8 @@ export default function ProgressScreen() {
               const text = formatReportAsText(data, t);
               await shareReport(text);
             }}
-            variant="outline"
+            variant="secondary"
+            icon="share-outline"
           />
         </>
       )}
@@ -307,7 +342,8 @@ function SummaryCard({
 }) {
   return (
     <Card style={styles.summaryCard}>
-      <Typography variant="title" align="center" color={color}>
+      <View style={[styles.summaryAccent, { backgroundColor: color }]} />
+      <Typography variant="heading" align="center" color={color}>
         {value}
       </Typography>
       <Typography variant="caption" align="center">
@@ -355,6 +391,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
+    overflow: 'hidden',
+  },
+  summaryAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    borderTopLeftRadius: borderRadius.lg,
+    borderTopRightRadius: borderRadius.lg,
   },
   averagesCard: {
     gap: spacing.md,
@@ -389,8 +435,14 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: '100%',
-    borderRadius: borderRadius.sm / 2,
+    borderTopLeftRadius: borderRadius.sm,
+    borderTopRightRadius: borderRadius.sm,
     minHeight: 4,
+  },
+  barCount: {
+    fontSize: 10,
+    fontWeight: '600',
+    marginBottom: 2,
   },
   barLabel: {
     fontSize: 10,
@@ -398,11 +450,14 @@ const styles = StyleSheet.create({
   },
   attemptRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    gap: spacing.md,
+  },
+  attemptIcon: {
+    width: 24,
   },
   attemptInfo: {
     flex: 1,

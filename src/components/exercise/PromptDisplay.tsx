@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { Typography } from '../ui/Typography';
 import { Card } from '../ui/Card';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing, borderRadius } from '../../constants/theme';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 
@@ -52,6 +52,7 @@ export function PromptDisplay({
 
   return (
     <Card style={styles.container}>
+      <View style={styles.accentBorder} />
       {emotion && (
         <View style={styles.emotionBadge}>
           <Typography variant="body" color={colors.accent} style={{ fontWeight: '700' }}>
@@ -59,7 +60,7 @@ export function PromptDisplay({
           </Typography>
         </View>
       )}
-      <Typography variant="caption" align="center" style={styles.instruction}>
+      <Typography variant="overline" align="center" style={styles.instruction}>
         {instruction}
       </Typography>
       <View style={styles.promptArea}>{renderPrompt()}</View>
@@ -70,13 +71,24 @@ export function PromptDisplay({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  accentBorder: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: colors.accent,
+    borderTopLeftRadius: borderRadius.lg,
+    borderBottomLeftRadius: borderRadius.lg,
   },
   instruction: {
     marginBottom: spacing.md,
   },
   promptArea: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   emotionBadge: {
     backgroundColor: colors.accentLight,

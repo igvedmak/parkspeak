@@ -23,7 +23,7 @@ import { calculateIntelligibility, getWordResults, type WordResult } from '../..
 import { getShuffledExercises, type ExerciseType, type Exercise } from '../../lib/content';
 import { saveAttempt, createSession, endSession } from '../../lib/database';
 import { stopSpeech } from '../../lib/speech';
-import { colors, spacing } from '../../constants/theme';
+import { colors, spacing, borderRadius } from '../../constants/theme';
 import React from 'react';
 
 interface SessionStep {
@@ -356,7 +356,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.accentLight,
+    borderRadius: borderRadius.full,
   },
 });

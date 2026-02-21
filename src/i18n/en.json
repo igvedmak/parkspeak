@@ -42,7 +42,9 @@
     "facial": "Face & Mouth",
     "facialDesc": "Strengthen facial muscles with guided exercises",
     "warmup": "Voice Warmup",
-    "warmupDesc": "Quick 2-minute warmup routine before practice"
+    "warmupDesc": "Quick 2-minute warmup routine before practice",
+    "voiceExercises": "Voice Exercises",
+    "timerExercises": "Timed Exercises"
   },
   "exercise": {
     "readAloud": "Read this aloud",
@@ -180,7 +182,29 @@
     "show": "Show",
     "hide": "Hide",
     "about": "About ParkSpeak",
-    "version": "Version"
+    "version": "Version",
+    "general": "General",
+    "integrations": "Integrations"
+  },
+  "hearing": {
+    "title": "Hearing Screening",
+    "description": "A quick 3-minute test to check your hearing",
+    "disclaimer": "This is a screening tool, not a diagnostic test. Results do not replace professional audiological evaluation.",
+    "useHeadphones": "Please use headphones for accurate results",
+    "ambientCheck": "Checking background noise...",
+    "tooNoisy": "It's too noisy. Please move to a quieter place.",
+    "quietEnough": "Good — environment is quiet enough",
+    "trial": "Trial {{current}} of {{total}}",
+    "listenCarefully": "Listen carefully and enter the 3 digits you hear",
+    "normal": "Normal Hearing",
+    "normalDesc": "Your hearing screening results are within normal range.",
+    "borderline": "Borderline",
+    "borderlineDesc": "Some difficulty detected. Consider a professional hearing check.",
+    "refer": "Possible Hearing Difficulty",
+    "referDesc": "We recommend consulting an audiologist for a full evaluation.",
+    "retakeTest": "Retake Test",
+    "lastTested": "Last tested: {{date}}",
+    "adaptationsEnabled": "App instructions adapted for your hearing profile"
   },
   "camera": {
     "enable": "Enable camera",

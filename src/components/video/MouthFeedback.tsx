@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Typography } from '../ui/Typography';
 import { colors, spacing, borderRadius } from '../../constants/theme';
 import { type MouthMetrics, getMouthZone, type MouthZone } from '../../lib/mouthMetrics';
@@ -23,6 +25,19 @@ const ZONE_KEYS: Record<MouthZone, string> = {
 
 export function MouthFeedback({ metrics }: MouthFeedbackProps) {
   const { t } = useTranslation();
+  const animatedWidth = useSharedValue(0);
+
+  const zone = metrics.isTracking ? getMouthZone(metrics) : 'closed';
+  const zoneColor = ZONE_COLORS[zone];
+  const fillWidth = metrics.isTracking ? Math.min(metrics.mouthOpening / 0.10, 1) : 0;
+
+  useEffect(() => {
+    animatedWidth.value = withSpring(fillWidth, { damping: 15, stiffness: 120 });
+  }, [fillWidth]);
+
+  const fillStyle = useAnimatedStyle(() => ({
+    width: `${Math.round(animatedWidth.value * 100)}%`,
+  }));
 
   if (!metrics.isTracking) {
     return (
@@ -33,10 +48,6 @@ export function MouthFeedback({ metrics }: MouthFeedbackProps) {
       </View>
     );
   }
-
-  const zone = getMouthZone(metrics);
-  const zoneColor = ZONE_COLORS[zone];
-  const fillWidth = Math.min(metrics.mouthOpening / 0.10, 1); // normalize to 0-1 for display
 
   return (
     <View style={styles.container}>
@@ -49,13 +60,11 @@ export function MouthFeedback({ metrics }: MouthFeedbackProps) {
         </Typography>
       </View>
       <View style={styles.barTrack}>
-        <View
+        <Animated.View
           style={[
             styles.barFill,
-            {
-              width: `${Math.round(fillWidth * 100)}%`,
-              backgroundColor: zoneColor,
-            },
+            { backgroundColor: zoneColor },
+            fillStyle,
           ]}
         />
       </View>
@@ -76,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   barTrack: {
-    height: 8,
+    height: 10,
     backgroundColor: colors.border,
     borderRadius: borderRadius.sm,
     overflow: 'hidden',

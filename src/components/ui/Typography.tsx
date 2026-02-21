@@ -4,7 +4,7 @@ import React from 'react';
 
 interface TypographyProps {
   children: React.ReactNode;
-  variant?: 'heading' | 'title' | 'body' | 'bodyLarge' | 'caption';
+  variant?: 'heading' | 'title' | 'subtitle' | 'body' | 'bodyLarge' | 'caption' | 'overline';
   color?: string;
   align?: 'left' | 'center' | 'right';
   style?: TextStyle;
@@ -44,6 +44,12 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     lineHeight: typography.sizes.xl * typography.lineHeights.tight,
   } as TextStyle,
+  subtitle: {
+    fontSize: typography.sizes.lg,
+    fontWeight: '600',
+    color: colors.textPrimary,
+    lineHeight: typography.sizes.lg * typography.lineHeights.tight,
+  } as TextStyle,
   body: {
     fontSize: typography.sizes.base,
     fontWeight: '400',
@@ -61,5 +67,13 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: colors.textSecondary,
     lineHeight: typography.sizes.small * typography.lineHeights.normal,
+  } as TextStyle,
+  overline: {
+    fontSize: typography.sizes.xs,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    lineHeight: typography.sizes.xs * typography.lineHeights.normal,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   } as TextStyle,
 });

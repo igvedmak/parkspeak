@@ -60,6 +60,18 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
   try { await database.execAsync(`ALTER TABLE attempts ADD COLUMN avg_jaw_displacement REAL`); } catch {}
 
   await database.execAsync(`
+    CREATE TABLE IF NOT EXISTS hearing_tests (
+      id TEXT PRIMARY KEY,
+      tested_at TEXT NOT NULL,
+      srt_db REAL NOT NULL,
+      result TEXT NOT NULL,
+      trials_json TEXT,
+      ambient_noise_db REAL,
+      language TEXT DEFAULT 'en'
+    );
+  `);
+
+  await database.execAsync(`
     CREATE TABLE IF NOT EXISTS carryover_challenges (
       id TEXT PRIMARY KEY,
       date TEXT NOT NULL,
@@ -487,6 +499,48 @@ export async function getStatsInRange(
       avgLoudness: row?.loudness ?? null,
       avgIntelligibility: row?.intel ?? null,
     };
+  });
+}
+
+// --- Hearing Tests ---
+
+export interface HearingTestRecord {
+  srtDb: number;
+  result: string;
+  trialsJson: string;
+  ambientNoiseDb: number | null;
+  language: string;
+}
+
+export async function saveHearingTest(record: HearingTestRecord): Promise<string> {
+  return serialize(async () => {
+    return withRetry(async (database) => {
+      const id = generateId();
+      const now = new Date().toISOString();
+      const cols = ['id', 'tested_at', 'srt_db', 'result', 'language'];
+      const vals = [sql(id), sql(now), sql(record.srtDb), sql(record.result), sql(record.language)];
+
+      if (record.trialsJson) { cols.push('trials_json'); vals.push(sql(record.trialsJson)); }
+      if (record.ambientNoiseDb != null) { cols.push('ambient_noise_db'); vals.push(sql(record.ambientNoiseDb)); }
+
+      await database.execAsync(
+        `INSERT INTO hearing_tests (${cols.join(', ')}) VALUES (${vals.join(', ')})`
+      );
+      return id;
+    });
+  });
+}
+
+export async function getLatestHearingTest(): Promise<{
+  tested_at: string;
+  srt_db: number;
+  result: string;
+} | null> {
+  return serialize(async () => {
+    const database = await getDatabase();
+    return database.getFirstAsync(
+      'SELECT tested_at, srt_db, result FROM hearing_tests ORDER BY tested_at DESC LIMIT 1'
+    );
   });
 }
 
